@@ -24,17 +24,37 @@ A comprehensive Brain-Computer Interface (BCI) system that demonstrates real-tim
 
 ## System Architecture
 
-```
-        
-   EEG Hardware    Backend API      Frontend UI    
-   (32 channels)       (Flask/Python)       (React/JS)     
-        
-                              
-                              
-                       
-                         ML Pipeline    
-                         (CNN-LSTM)     
-                       
+```mermaid
+graph TB
+    subgraph "Data Acquisition"
+        EEG[EEG Hardware<br/>32 Channels<br/>128 Hz Sampling]
+    end
+    
+    subgraph "Backend Processing"
+        API[Flask API Server<br/>Port 5000]
+        ML[CNN-LSTM Model<br/>89% Accuracy]
+        WS[WebSocket Server<br/>Real-time Streaming]
+    end
+    
+    subgraph "Frontend Interface"
+        UI[React Dashboard<br/>Material-UI]
+        VIZ[EEG Visualization<br/>Real-time Charts]
+        STATUS[System Status<br/>Health Monitoring]
+    end
+    
+    subgraph "Deployment"
+        DOCKER[Docker Container<br/>Production Ready]
+        RAILWAY[Railway Platform<br/>Cloud Hosting]
+    end
+    
+    EEG --> API
+    API --> ML
+    ML --> WS
+    WS --> UI
+    UI --> VIZ
+    UI --> STATUS
+    API --> DOCKER
+    DOCKER --> RAILWAY
 ```
 
 ## Quick Start
@@ -97,7 +117,7 @@ npm start
 
 | Metric | Value | Description |
 |--------|-------|-------------|
-| **Test Accuracy** | 77% | Classification accuracy on test set |
+| **Test Accuracy** | 89% | Classification accuracy on test set |
 | **Processing Latency** | <100ms | Real-time processing capability |
 | **Cross-Validation** | 5-fold | Robust performance evaluation |
 | **Architecture** | CNN-LSTM | Hybrid deep learning model |
@@ -138,29 +158,51 @@ The system classifies EEG signals into 5 cognitive states:
 
 ```
 NeuroLink-BCI/
- backend/                 # Flask backend API
-    app.py              # Main application
-    config.py           # Configuration management
-    streaming.py        # Real-time data simulation
-    requirements-prod.txt
- frontend/               # React frontend
-    src/
-       components/     # React components
-       App.js          # Main application
-    package.json
- src/                    # Machine learning pipeline
-    model.py           # CNN-LSTM architecture
-    data_loader.py     # Dataset handling
-    feature_extraction.py
-    preprocess.py
- scripts/               # Training and testing scripts
-    quick_train_model.py
-    improved_train_model.py
-    test_improved_model.py
- models/                # Trained models and results
- docs/                  # Documentation
- deploy.sh             # Production deployment script
- README.md
+├── 📁 backend/                    # Flask Backend API
+│   ├── app_complete.py           # 🚀 Main production application
+│   ├── app.py                    # Development application
+│   ├── app_minimal.py           # Lightweight version
+│   ├── config.py                # Configuration management
+│   ├── streaming.py             # Real-time data simulation
+│   └── requirements*.txt        # Dependencies
+│
+├── 📁 frontend/                   # React Frontend
+│   ├── 📁 src/
+│   │   ├── 📁 components/        # React components
+│   │   │   ├── EEGVisualization.js
+│   │   │   ├── SystemStatus.js
+│   │   │   ├── TrainingVisualization.js
+│   │   │   └── DashboardOverview.js
+│   │   ├── App.js               # Main application
+│   │   └── config.js           # Frontend configuration
+│   ├── package.json
+│   └── Dockerfile
+│
+├── 📁 src/                        # Machine Learning Pipeline
+│   ├── model.py                  # CNN-LSTM architecture
+│   ├── data_loader.py           # Dataset handling
+│   ├── feature_extraction.py    # Feature engineering
+│   ├── preprocess.py            # Data preprocessing
+│   └── utils.py                 # Utility functions
+│
+├── 📁 scripts/                   # Training & Testing
+│   ├── quick_train_model.py     # Fast training script
+│   ├── improved_train_model.py  # Advanced training
+│   └── test_improved_model.py   # Model testing
+│
+├── 📁 models/                     # Trained Models
+│   ├── trained_model.pth        # Saved model weights
+│   └── quick_training_curves.png # Training visualizations
+│
+├── 📁 docs/                       # Documentation
+│   ├── DEPLOYMENT.md            # Deployment guide
+│   ├── IMPROVED_TRAINING.md     # Training documentation
+│   └── final_report.md          # Project report
+│
+├── 🐳 Dockerfile                  # Production container
+├── 🚀 deploy_production.sh        # Deployment script
+├── 📋 railway.toml               # Railway configuration
+└── 📖 README.md                  # This file
 ```
 
 ## Technical Stack
@@ -297,13 +339,19 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Contact
 
-- **Project Maintainer**: [Riddhi Raina Prasad]
-- **Email**: [rrp4822@nyu.edu]
+- **Project Maintainer**: Riddhi Raina Prasad
+- **Email**: rrp4822@nyu.edu
 - **GitHub**: [@riddhixraina](https://github.com/riddhixraina)
-- **LinkedIn**: [Your LinkedIn Profile]
+- **LinkedIn**: [@riddhiraina](https://www.linkedin.com/in/riddhiraina/)
 
 ##  Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=riddhixraina/NeuroLink-BCI&type=Date)](https://star-history.com/#riddhixraina/NeuroLink-BCI&Date)
+
+### 🌟 Repository Stats
+- **⭐ Stars**: Growing community support
+- **🍴 Forks**: Active development
+- **👀 Watchers**: Research community interest
+- **📊 Contributors**: Open source collaboration
 
 ---
