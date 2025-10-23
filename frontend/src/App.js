@@ -195,16 +195,26 @@ function App() {
     setLoading(true);
     try {
       if (streaming) {
+        console.log('Stopping streaming...', `${config.API_BASE_URL}/api/stop_streaming`);
         await axios.post(`${config.API_BASE_URL}/api/stop_streaming`);
         socketRef.current.emit('stop_streaming');
         setStreaming(false);
       } else {
+        console.log('Starting streaming...', `${config.API_BASE_URL}/api/start_streaming`);
+        console.log('Config API_BASE_URL:', config.API_BASE_URL);
+        console.log('Environment REACT_APP_API_URL:', process.env.REACT_APP_API_URL);
         await axios.post(`${config.API_BASE_URL}/api/start_streaming`);
         socketRef.current.emit('start_streaming');
         setStreaming(true);
       }
     } catch (error) {
       console.error('Error toggling streaming:', error);
+      console.error('Error details:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+        config: error.config
+      });
       setError('Failed to toggle streaming');
     } finally {
       setLoading(false);
