@@ -7,12 +7,6 @@ const EEGVisualization = ({ eegData, streaming }) => {
   const [layout, setLayout] = useState({});
   const plotRef = useRef(null);
 
-  useEffect(() => {
-    if (eegData && eegData.eeg_data && eegData.channel_names) {
-      updatePlot(eegData);
-    }
-  }, [eegData, updatePlot]);
-
   const updatePlot = (data) => {
     const { eeg_data, channel_names, sampling_rate } = data;
     
@@ -72,6 +66,12 @@ const EEGVisualization = ({ eegData, streaming }) => {
       font: { size: 12 }
     });
   };
+
+  useEffect(() => {
+    if (eegData && eegData.eeg_data && eegData.channel_names) {
+      updatePlot(eegData);
+    }
+  }, [eegData]);
 
   const getChannelColor = (index) => {
     const colors = [

@@ -58,47 +58,6 @@ function App() {
   const socketRef = useRef(null);
   const dataBufferRef = useRef([]);
 
-  // Initialize socket connection
-  useEffect(() => {
-    const socket = io(config.API_BASE_URL);
-    socketRef.current = socket;
-
-    // Connection events
-    socket.on('connect', () => {
-      console.log('Connected to server');
-      setConnected(true);
-      setError(null);
-    });
-
-    socket.on('disconnect', () => {
-      console.log('Disconnected from server');
-      setConnected(false);
-    });
-
-    socket.on('connect_error', (error) => {
-      console.error('Connection error:', error);
-      setError('Failed to connect to server');
-    });
-
-    // Data events
-    socket.on('eeg_data', (data) => {
-      handleEEGData(data);
-    });
-
-    socket.on('system_status', (status) => {
-      setSystemStatus(status);
-    });
-
-    socket.on('streaming_status', (status) => {
-      console.log('Streaming status:', status);
-    });
-
-    // Cleanup on unmount
-    return () => {
-      socket.disconnect();
-    };
-  }, [handleEEGData]);
-
   // Handle incoming EEG data
   const handleEEGData = (data) => {
     setEegData(data);
@@ -151,6 +110,47 @@ function App() {
       dataBufferRef.current = dataBufferRef.current.slice(-100);
     }
   };
+
+  // Initialize socket connection
+  useEffect(() => {
+    const socket = io(config.API_BASE_URL);
+    socketRef.current = socket;
+
+    // Connection events
+    socket.on('connect', () => {
+      console.log('Connected to server');
+      setConnected(true);
+      setError(null);
+    });
+
+    socket.on('disconnect', () => {
+      console.log('Disconnected from server');
+      setConnected(false);
+    });
+
+    socket.on('connect_error', (error) => {
+      console.error('Connection error:', error);
+      setError('Failed to connect to server');
+    });
+
+    // Data events
+    socket.on('eeg_data', (data) => {
+      handleEEGData(data);
+    });
+
+    socket.on('system_status', (status) => {
+      setSystemStatus(status);
+    });
+
+    socket.on('streaming_status', (status) => {
+      console.log('Streaming status:', status);
+    });
+
+    // Cleanup on unmount
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
 
   // Calculate novelty score based on signal characteristics
   const calculateNoveltyScore = (eegData) => {
