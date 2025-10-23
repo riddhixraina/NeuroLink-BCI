@@ -233,9 +233,8 @@ def get_training_progress():
     })
 
 @socketio.on('connect')
-def handle_connect():
+def handle_connect(auth=None):
     print(f'Client connected: {request.sid}')
-    print(f'Client transport: {request.transport}')
     print(f'Client namespace: {request.namespace}')
     emit('status', {'status': 'connected', 'server_version': '1.0.0'})
 
