@@ -1,14 +1,19 @@
 [build]
 builder = "dockerfile"
-dockerfilePath = "Dockerfile.railway"
+dockerfilePath = "Dockerfile"
 
 [deploy]
 startCommand = "python app.py"
 healthcheckPath = "/api/health"
 healthcheckTimeout = 300
 restartPolicyType = "on_failure"
+port = 5000
 
 [env]
 FLASK_ENV = "production"
 PORT = "5000"
 PYTHON_VERSION = "3.10"
+RAILWAY_STATIC_URL = ""
+
+[build.env]
+PIP_REQUIREMENTS_FILE = "backend/requirements-railway.txt"
