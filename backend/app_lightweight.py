@@ -114,11 +114,20 @@ def index():
 
 @app.route('/api/health')
 def health():
-    return jsonify({
-        'status': 'healthy',
-        'timestamp': datetime.now().isoformat(),
-        'streaming': streaming_active
-    })
+    try:
+        return jsonify({
+            'status': 'healthy',
+            'timestamp': datetime.now().isoformat(),
+            'streaming': streaming_active,
+            'version': '1.0.0',
+            'mode': 'lightweight'
+        })
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'error': str(e),
+            'timestamp': datetime.now().isoformat()
+        }), 500
 
 @app.route('/api/status')
 def status():
@@ -236,5 +245,14 @@ if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     print(f"Starting NeuroLink-BCI Backend on port {port}")
     print("Mode: Mock data (no PyTorch required)")
+    print(f"Environment: PORT={port}, FLASK_ENV={os.environ.get('FLASK_ENV', 'development')}")
     
-    socketio.run(app, host='0.0.0.0', port=port, debug=False)
+    try:
+        print("Attempting to start SocketIO server...")
+        # Start the app
+        socketio.run(app, host='0.0.0.0', port=port, debug=False, allow_unsafe_werkzeug=True)
+    except Exception as e:
+        print(f"Error starting SocketIO server: {e}")
+        print("Falling back to simple Flask app...")
+        # Fallback to simple Flask app if SocketIO fails
+        app.run(host='0.0.0.0', port=port, debug=False)

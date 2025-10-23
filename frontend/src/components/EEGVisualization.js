@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Plot from 'react-plotly.js';
 import { Box, Typography } from '@mui/material';
 
@@ -7,7 +7,7 @@ const EEGVisualization = ({ eegData, streaming }) => {
   const [layout, setLayout] = useState({});
   const plotRef = useRef(null);
 
-  const updatePlot = (data) => {
+  const updatePlot = useCallback((data) => {
     const { eeg_data, channel_names, sampling_rate } = data;
     
     if (!eeg_data || !channel_names) return;
@@ -65,13 +65,13 @@ const EEGVisualization = ({ eegData, streaming }) => {
       plot_bgcolor: 'rgba(0,0,0,0)',
       font: { size: 12 }
     });
-  };
+  }, []);
 
   useEffect(() => {
     if (eegData && eegData.eeg_data && eegData.channel_names) {
       updatePlot(eegData);
     }
-  }, [eegData]);
+  }, [eegData, updatePlot]);
 
   const getChannelColor = (index) => {
     const colors = [

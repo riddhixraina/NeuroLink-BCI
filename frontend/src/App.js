@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   AppBar,
   Toolbar,
@@ -59,7 +59,7 @@ function App() {
   const dataBufferRef = useRef([]);
 
   // Handle incoming EEG data
-  const handleEEGData = (data) => {
+  const handleEEGData = useCallback((data) => {
     setEegData(data);
     
     // Only update state if no manual override is set
@@ -109,7 +109,7 @@ function App() {
     if (dataBufferRef.current.length > 100) {
       dataBufferRef.current = dataBufferRef.current.slice(-100);
     }
-  };
+  }, [manualStateOverride]);
 
   // Initialize socket connection
   useEffect(() => {
@@ -150,7 +150,7 @@ function App() {
     return () => {
       socket.disconnect();
     };
-  }, []);
+  }, [handleEEGData]);
 
   // Calculate novelty score based on signal characteristics
   const calculateNoveltyScore = (eegData) => {
