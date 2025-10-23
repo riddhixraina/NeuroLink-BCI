@@ -260,7 +260,7 @@ if __name__ == '__main__':
     
     try:
         # Start the app with SocketIO
-        socketio.run(app, host='0.0.0.0', port=port, debug=False, allow_unsafe_werkzeug=True)
+        socketio.run(app, host='0.0.0.0', port=port, debug=False)
     except Exception as e:
         print(f"Error starting SocketIO server: {e}")
         print("Falling back to simple Flask app...")
