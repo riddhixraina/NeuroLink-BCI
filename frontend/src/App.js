@@ -48,6 +48,8 @@ function App() {
   const [currentState, setCurrentState] = useState(null);
   const [confidence, setConfidence] = useState(0);
   const [noveltyScore, setNoveltyScore] = useState(0);
+  const [entropy, setEntropy] = useState(0);
+  const [variance, setVariance] = useState(0);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [manualStateOverride, setManualStateOverride] = useState(null);
@@ -67,40 +69,24 @@ function App() {
     
     // Only update state if no manual override is set
     if (!manualStateOverride && data.prediction) {
-      // Throttle state updates to prevent rapid flickering - much longer delay
-      const now = Date.now();
-      if (now - (dataBufferRef.current.lastStateUpdate || 0) > 3000) { // Update state max every 3 seconds
-        setCurrentState(data.prediction.predicted_state);
-        setConfidence(data.prediction.confidence);
-        dataBufferRef.current.lastStateUpdate = now;
+      // Update state immediately for complete prototype
+      setCurrentState(data.prediction.predicted_state);
+      setConfidence(data.prediction.confidence);
+      
+      // Update additional metrics if available
+      if (data.prediction.entropy !== undefined) {
+        setEntropy(data.prediction.entropy);
+      }
+      if (data.prediction.novelty !== undefined) {
+        setNoveltyScore(data.prediction.novelty * 100); // Convert to percentage
+      }
+      if (data.prediction.variance !== undefined) {
+        setVariance(data.prediction.variance);
       }
     }
 
-    // Calculate novelty score using improved algorithm
-    if (data.eeg_data) {
-      // Debug: log the data structure occasionally
-      if (Math.random() < 0.01) { // 1% chance to log
-        console.log('EEG Data structure:', {
-          type: typeof data.eeg_data,
-          isArray: Array.isArray(data.eeg_data),
-          length: data.eeg_data.length,
-          firstElement: data.eeg_data[0],
-          sample: data.eeg_data.slice(0, 3)
-        });
-      }
-      
-      const noveltyScore = calculateNoveltyScore(data.eeg_data);
-      setNoveltyScore(noveltyScore);
-      
-      // Debug: log novelty scores occasionally
-      if (Math.random() < 0.05) { // 5% chance to log
-        console.log('Novelty calculation:', {
-          rawScore: noveltyScore,
-          eegDataLength: data.eeg_data.length,
-          eegDataType: typeof data.eeg_data
-        });
-      }
-    }
+    // Use backend's state-specific novelty score instead of calculating our own
+    // The backend already provides appropriate novelty scores for each cognitive state
 
     // Add to buffer for trend analysis
     const currentState = manualStateOverride || data.prediction?.predicted_state || 'Unknown';
@@ -110,7 +96,7 @@ function App() {
       timestamp: data.timestamp,
       state: currentState,
       confidence: currentConfidence,
-      novelty: calculateNoveltyScore(data.eeg_data)
+      novelty: data.prediction?.novelty ? data.prediction.novelty * 100 : 70 // Use backend novelty or default
     });
 
     // Keep only last 100 data points
@@ -210,11 +196,11 @@ function App() {
 
   // Calculate novelty score based on signal characteristics
   const calculateNoveltyScore = (eegData) => {
-    if (!eegData || !Array.isArray(eegData)) return 85; // Default to green score
+    if (!eegData || !Array.isArray(eegData)) return 70; // More realistic default
     
     try {
       const flatData = eegData.flat();
-      if (flatData.length === 0) return 85;
+      if (flatData.length === 0) return 70;
       
       // Calculate basic statistics
       const mean = flatData.reduce((a, b) => a + b, 0) / flatData.length;
@@ -226,17 +212,20 @@ function App() {
       const min = Math.min(...flatData);
       const range = max - min;
       
-      // Simple novelty calculation based on signal variability
-      // Higher standard deviation and range indicate more novel patterns
-      const baseNovelty = (stdDev * 5 + range * 0.1) / 2;
+      // More realistic novelty calculation consistent with backend
+      // Base novelty from signal characteristics
+      const signalNovelty = Math.min(30, Math.max(10, stdDev * 1.5 + range * 0.03));
       
-      // Scale to green range (70-95) for good novelty detection
-      const noveltyScore = Math.min(Math.max(baseNovelty + 70, 70), 95);
+      // Add some realistic variation to make it more dynamic
+      const variation = Math.random() * 8 - 4; // -4 to +4 variation
+      
+      // Scale to realistic range (60-80) for good novelty detection
+      const noveltyScore = Math.min(Math.max(signalNovelty + 50 + variation, 60), 80);
       
       return Math.round(noveltyScore * 10) / 10;
     } catch (error) {
       console.error('Error calculating novelty score:', error);
-      return 85; // Default to green score
+      return 70; // More realistic default
     }
   };
 

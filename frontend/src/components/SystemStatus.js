@@ -86,8 +86,8 @@ const SystemStatus = ({ status }) => {
                 Streaming Status
               </Typography>
               <Chip
-                label={status?.streaming_active ? 'Active' : 'Inactive'}
-                color={status?.streaming_active ? 'primary' : 'default'}
+                label={status?.streaming ? 'Active' : 'Inactive'}
+                color={status?.streaming ? 'primary' : 'default'}
                 size="small"
               />
             </Box>
@@ -99,8 +99,8 @@ const SystemStatus = ({ status }) => {
                 Components Loaded
               </Typography>
               <Chip
-                label={status?.components_loaded ? 'All Loaded' : 'Partial'}
-                color={status?.components_loaded ? 'success' : 'warning'}
+                label={status?.components ? 'All Loaded' : 'Partial'}
+                color={status?.components ? 'success' : 'warning'}
                 size="small"
               />
             </Box>
@@ -120,7 +120,7 @@ const SystemStatus = ({ status }) => {
           </Grid>
         </Grid>
 
-        {status && (
+        {status && status.components && (
           <Box sx={{ mt: 2 }}>
             <Typography variant="body2" color="text.secondary" gutterBottom>
               Component Status:
@@ -128,32 +128,32 @@ const SystemStatus = ({ status }) => {
             <Grid container spacing={1}>
               <Grid item xs={6} sm={3}>
                 <Chip
-                  label={`Data Loader: ${getComponentStatus(status.components_loaded)}`}
-                  color={getComponentColor(status.components_loaded)}
+                  label={`Data Loader: ${getComponentStatus(status.components.data_loader === 'loaded')}`}
+                  color={getComponentColor(status.components.data_loader === 'loaded')}
                   size="small"
                   variant="outlined"
                 />
               </Grid>
               <Grid item xs={6} sm={3}>
                 <Chip
-                  label={`Preprocessor: ${getComponentStatus(status.components_loaded)}`}
-                  color={getComponentColor(status.components_loaded)}
+                  label={`Preprocessor: ${getComponentStatus(status.components.preprocessor === 'loaded')}`}
+                  color={getComponentColor(status.components.preprocessor === 'loaded')}
                   size="small"
                   variant="outlined"
                 />
               </Grid>
               <Grid item xs={6} sm={3}>
                 <Chip
-                  label={`Feature Extractor: ${getComponentStatus(status.components_loaded)}`}
-                  color={getComponentColor(status.components_loaded)}
+                  label={`Feature Extractor: ${getComponentStatus(status.components.feature_extractor === 'loaded')}`}
+                  color={getComponentColor(status.components.feature_extractor === 'loaded')}
                   size="small"
                   variant="outlined"
                 />
               </Grid>
               <Grid item xs={6} sm={3}>
                 <Chip
-                  label={`Classifier: ${getComponentStatus(status.components_loaded)}`}
-                  color={getComponentColor(status.components_loaded)}
+                  label={`Classifier: ${getComponentStatus(status.components.classifier === 'loaded')}`}
+                  color={getComponentColor(status.components.classifier === 'loaded')}
                   size="small"
                   variant="outlined"
                 />
@@ -168,8 +168,8 @@ const SystemStatus = ({ status }) => {
           </Typography>
           <LinearProgress
             variant="determinate"
-            value={status?.components_loaded ? 100 : 50}
-            color={status?.components_loaded ? 'success' : 'warning'}
+            value={status?.components ? 100 : 50}
+            color={status?.components ? 'success' : 'warning'}
             sx={{ height: 6, borderRadius: 3 }}
           />
         </Box>

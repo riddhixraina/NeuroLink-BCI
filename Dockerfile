@@ -15,8 +15,8 @@ COPY backend/requirements-railway.txt requirements.txt
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy only the minimal backend
-COPY backend/app_minimal.py ./app.py
+# Copy the complete working backend
+COPY backend/app_complete.py ./app.py
 
 # Create necessary directories
 RUN mkdir -p logs

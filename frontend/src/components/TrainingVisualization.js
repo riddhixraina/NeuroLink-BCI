@@ -3,6 +3,7 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
   BarChart, Bar
 } from 'recharts';
+import config from '../config';
 
 const TrainingVisualization = () => {
   const [trainingData, setTrainingData] = useState(null);
@@ -36,7 +37,7 @@ const TrainingVisualization = () => {
 
   const fetchTrainingData = async () => {
     try {
-      const response = await fetch('/api/training/status');
+      const response = await fetch(`${config.API_BASE_URL}/api/training/status`);
       const data = await response.json();
       setTrainingData(data);
       setLoading(false);
@@ -49,13 +50,13 @@ const TrainingVisualization = () => {
   const startTraining = async () => {
     try {
       setTrainingInProgress(true);
-      const response = await fetch('/api/training/start', { method: 'POST' });
+      const response = await fetch(`${config.API_BASE_URL}/api/training/start`, { method: 'POST' });
       const result = await response.json();
       
       if (result.status === 'training_started') {
         // Start polling for progress
         const progressInterval = setInterval(async () => {
-          const progressResponse = await fetch('/api/training/progress');
+          const progressResponse = await fetch(`${config.API_BASE_URL}/api/training/progress`);
           const progressData = await progressResponse.json();
           
           if (!progressData.training_in_progress) {

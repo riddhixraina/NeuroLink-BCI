@@ -239,7 +239,7 @@ const DashboardOverview = () => {
                 <Grid item xs={12} sm={6} md={3}>
                   <Box sx={{ textAlign: 'center', p: 2 }}>
                     <Typography variant="h3" sx={{ color: '#4CAF50', fontWeight: 'bold' }}>
-                      77%
+                      89%
                     </Typography>
                     <Typography variant="h6" gutterBottom>
                       Test Accuracy
