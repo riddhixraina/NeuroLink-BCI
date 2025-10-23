@@ -98,6 +98,7 @@ def streaming_worker():
             }
             
             # Emit to connected clients
+            print(f"Emitting EEG data to clients. Connected clients: {len(socketio.server.manager.rooms.get('/', {}).get('', set()))}")
             socketio.emit('eeg_data', combined_data)
             
             # Wait before next update
@@ -238,11 +239,13 @@ def get_training_progress():
 def handle_connect(auth=None):
     print(f'Client connected: {request.sid}')
     print(f'Client namespace: {request.namespace}')
+    print(f'Total connected clients: {len(socketio.server.manager.rooms.get("/", {}).get("", set()))}')
     emit('status', {'status': 'connected', 'server_version': '1.0.0'})
 
 @socketio.on('disconnect')
 def handle_disconnect():
     print(f'Client disconnected: {request.sid}')
+    print(f'Remaining connected clients: {len(socketio.server.manager.rooms.get("/", {}).get("", set()))}')
 
 @socketio.on('start_streaming')
 def handle_start_streaming():

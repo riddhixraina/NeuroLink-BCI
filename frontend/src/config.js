@@ -1,10 +1,18 @@
 // Production configuration for NeuroLink-BCI Frontend
 const config = {
-  // API Configuration
-  API_BASE_URL: process.env.REACT_APP_API_URL || 'https://neurolink-bci-production.up.railway.app',
+  // API Configuration - ensure it's a complete URL
+  API_BASE_URL: (() => {
+    const url = process.env.REACT_APP_API_URL || 'https://neurolink-bci-production.up.railway.app';
+    // If URL doesn't start with http, add https://
+    return url.startsWith('http') ? url : `https://${url}`;
+  })(),
   
-  // WebSocket Configuration  
-  WS_URL: process.env.REACT_APP_WS_URL || 'wss://neurolink-bci-production.up.railway.app',
+  // WebSocket Configuration - ensure it's a complete URL
+  WS_URL: (() => {
+    const url = process.env.REACT_APP_WS_URL || 'wss://neurolink-bci-production.up.railway.app';
+    // If URL doesn't start with ws, add wss://
+    return url.startsWith('ws') ? url : `wss://${url}`;
+  })(),
   
   // Environment
   NODE_ENV: process.env.NODE_ENV || 'development',

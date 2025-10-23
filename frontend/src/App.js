@@ -113,41 +113,58 @@ function App() {
 
   // Initialize socket connection
   useEffect(() => {
-    const socket = io(config.API_BASE_URL);
+    console.log('Initializing Socket.IO connection to:', config.API_BASE_URL);
+    const socket = io(config.API_BASE_URL, {
+      transports: ['websocket', 'polling'],
+      timeout: 20000,
+      forceNew: true
+    });
     socketRef.current = socket;
 
     // Connection events
     socket.on('connect', () => {
-      console.log('Connected to server');
+      console.log('Socket.IO connected to server:', socket.id);
       setConnected(true);
       setError(null);
     });
 
-    socket.on('disconnect', () => {
-      console.log('Disconnected from server');
+    socket.on('disconnect', (reason) => {
+      console.log('Socket.IO disconnected from server:', reason);
       setConnected(false);
     });
 
     socket.on('connect_error', (error) => {
-      console.error('Connection error:', error);
+      console.error('Socket.IO connection error:', error);
       setError('Failed to connect to server');
     });
 
     // Data events
     socket.on('eeg_data', (data) => {
+      console.log('Received EEG data:', data);
       handleEEGData(data);
     });
 
     socket.on('system_status', (status) => {
+      console.log('Received system status:', status);
       setSystemStatus(status);
     });
 
     socket.on('streaming_status', (status) => {
-      console.log('Streaming status:', status);
+      console.log('Received streaming status:', status);
+    });
+
+    socket.on('status', (status) => {
+      console.log('Received status event:', status);
+    });
+
+    // Debug: Log all events
+    socket.onAny((event, ...args) => {
+      console.log('Socket.IO event received:', event, args);
     });
 
     // Cleanup on unmount
     return () => {
+      console.log('Disconnecting Socket.IO...');
       socket.disconnect();
     };
   }, [handleEEGData]);
