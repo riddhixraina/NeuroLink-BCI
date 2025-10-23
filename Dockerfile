@@ -29,4 +29,5 @@ ENV PORT=5000
 EXPOSE 5000
 
 # Run the lightweight application
-CMD ["python", "app.py"]
+# Run the application with gunicorn
+CMD ["gunicorn", "--worker-class", "eventlet", "--workers", "1", "--bind", "0.0.0.0:5000", "--timeout", "120", "app:app"]

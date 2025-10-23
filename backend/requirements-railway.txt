@@ -4,3 +4,5 @@ Flask-SocketIO==5.3.6
 Flask-CORS==4.0.0
 numpy==1.24.3
 python-dotenv==1.0.0
+gunicorn==21.2.0
+eventlet==0.33.3

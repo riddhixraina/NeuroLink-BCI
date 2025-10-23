@@ -248,4 +248,11 @@ if __name__ == '__main__':
     print(f"Starting Ultra-Minimal NeuroLink-BCI Backend on port {port}")
     print(f"Environment: PORT={port}, FLASK_ENV={os.environ.get('FLASK_ENV', 'development')}")
     
-    socketio.run(app, host='0.0.0.0', port=port, debug=False)
+    try:
+        # Start the app with SocketIO
+        socketio.run(app, host='0.0.0.0', port=port, debug=False, allow_unsafe_werkzeug=True)
+    except Exception as e:
+        print(f"Error starting SocketIO server: {e}")
+        print("Falling back to simple Flask app...")
+        # Fallback to simple Flask app if SocketIO fails
+        app.run(host='0.0.0.0', port=port, debug=False)
