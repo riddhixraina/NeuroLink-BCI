@@ -31,6 +31,7 @@ import {
 import Plot from 'react-plotly.js';
 import io from 'socket.io-client';
 import axios from 'axios';
+import config from './config';
 
 // Import components
 import EEGVisualization from './components/EEGVisualization';
@@ -61,7 +62,7 @@ function App() {
 
   // Initialize socket connection
   useEffect(() => {
-    const socket = io('http://localhost:5000');
+    const socket = io(config.API_BASE_URL);
     socketRef.current = socket;
 
     // Connection events
@@ -196,11 +197,11 @@ function App() {
     setLoading(true);
     try {
       if (streaming) {
-        await axios.post('http://localhost:5000/api/stop_streaming');
+        await axios.post(`${config.API_BASE_URL}/api/stop_streaming`);
         socketRef.current.emit('stop_streaming');
         setStreaming(false);
       } else {
-        await axios.post('http://localhost:5000/api/start_streaming');
+        await axios.post(`${config.API_BASE_URL}/api/start_streaming`);
         socketRef.current.emit('start_streaming');
         setStreaming(true);
       }
@@ -215,7 +216,7 @@ function App() {
   // Get system status
   const getSystemStatus = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/status');
+      const response = await axios.get(`${config.API_BASE_URL}/api/status`);
       setSystemStatus(response.data);
     } catch (error) {
       console.error('Error getting system status:', error);
@@ -226,7 +227,7 @@ function App() {
   // Set cognitive state
   const setCognitiveState = async (stateId) => {
     try {
-      const response = await axios.post('http://localhost:5000/api/set_cognitive_state', {
+      const response = await axios.post(`${config.API_BASE_URL}/api/set_cognitive_state`, {
         state: stateId
       });
       
