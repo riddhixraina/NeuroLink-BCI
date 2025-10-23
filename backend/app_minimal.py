@@ -22,7 +22,15 @@ CORS(app, origins=[
     "http://localhost:3000",
     "http://localhost:3001"
 ])
-socketio = SocketIO(app, cors_allowed_origins="*")
+socketio = SocketIO(
+    app, 
+    cors_allowed_origins="*", 
+    logger=True, 
+    engineio_logger=True,
+    always_connect=True,
+    ping_timeout=60,
+    ping_interval=25
+)
 
 # Global variables
 streaming_active = False
@@ -226,12 +234,14 @@ def get_training_progress():
 
 @socketio.on('connect')
 def handle_connect():
-    print('Client connected')
-    emit('status', {'status': 'connected'})
+    print(f'Client connected: {request.sid}')
+    print(f'Client transport: {request.transport}')
+    print(f'Client namespace: {request.namespace}')
+    emit('status', {'status': 'connected', 'server_version': '1.0.0'})
 
 @socketio.on('disconnect')
 def handle_disconnect():
-    print('Client disconnected')
+    print(f'Client disconnected: {request.sid}')
 
 @socketio.on('start_streaming')
 def handle_start_streaming():
