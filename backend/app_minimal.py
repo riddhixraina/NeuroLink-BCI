@@ -10,7 +10,13 @@ from datetime import datetime
 
 # Initialize Flask app
 app = Flask(__name__)
-CORS(app)
+CORS(app, origins=[
+    "https://neuro-link-bci.vercel.app",
+    "https://neuro-link-bci-git-main-riddhixrainas-projects.vercel.app",
+    "https://neuro-link-exetr1b97-riddhixrainas-projects.vercel.app",
+    "http://localhost:3000",
+    "http://localhost:3001"
+])
 
 # Global variables
 streaming_active = False
@@ -31,7 +37,21 @@ def health():
         'timestamp': datetime.now().isoformat(),
         'streaming': streaming_active,
         'version': '1.0.0',
-        'mode': 'ultra-minimal'
+        'mode': 'ultra-minimal',
+        'cors_origins': [
+            "https://neuro-link-bci.vercel.app",
+            "https://neuro-link-bci-git-main-riddhixrainas-projects.vercel.app",
+            "https://neuro-link-exetr1b97-riddhixrainas-projects.vercel.app"
+        ]
+    })
+
+@app.route('/api/test')
+def test():
+    return jsonify({
+        'message': 'Backend connection test successful',
+        'timestamp': datetime.now().isoformat(),
+        'origin': request.headers.get('Origin', 'No origin header'),
+        'user_agent': request.headers.get('User-Agent', 'No user agent')
     })
 
 @app.route('/api/status')
