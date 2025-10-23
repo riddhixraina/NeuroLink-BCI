@@ -67,9 +67,9 @@ function App() {
     
     // Only update state if no manual override is set
     if (!manualStateOverride && data.prediction) {
-      // Throttle state updates to prevent rapid flickering
+      // Throttle state updates to prevent rapid flickering - much longer delay
       const now = Date.now();
-      if (now - (dataBufferRef.current.lastStateUpdate || 0) > 1000) { // Update state max every 1 second
+      if (now - (dataBufferRef.current.lastStateUpdate || 0) > 3000) { // Update state max every 3 seconds
         setCurrentState(data.prediction.predicted_state);
         setConfidence(data.prediction.confidence);
         dataBufferRef.current.lastStateUpdate = now;
@@ -158,6 +158,13 @@ function App() {
       // Update streaming status based on backend status
       if (status.streaming) {
         setStreaming(true);
+      }
+      // Update component status if provided
+      if (status.components) {
+        setSystemStatus(prev => ({
+          ...prev,
+          components: status.components
+        }));
       }
     });
 

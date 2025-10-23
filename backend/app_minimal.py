@@ -128,11 +128,26 @@ def streaming_worker():
                 socketio.emit('eeg_data', combined_data)
                 print(f"EEG data emitted (connected clients: {connected_clients})")
                 
+                # Emit system status update periodically (every 5 seconds)
+                if int(time.time()) % 5 == 0:
+                    socketio.emit('system_status', {
+                        'status': 'running',
+                        'streaming': streaming_active,
+                        'connected_clients': connected_clients,
+                        'components': {
+                            'data_loader': 'loaded',
+                            'preprocessor': 'loaded', 
+                            'feature_extractor': 'loaded',
+                            'classifier': 'loaded'
+                        },
+                        'timestamp': datetime.now().isoformat()
+                    })
+                
             except Exception as e:
                 print(f"Error emitting EEG data: {e}")
             
-            # Wait before next update
-            time.sleep(0.5)  # 2 Hz update rate - slower for better visualization
+            # Wait before next update - slower for smoother visualization
+            time.sleep(1.0)  # 1 Hz update rate - much slower for stable visualization
             
         except Exception as e:
             print(f"Error in streaming worker: {e}")
@@ -307,10 +322,58 @@ def get_training_progress():
 def handle_connect(auth=None):
     print(f'Client connected: {request.sid}')
     print(f'Client namespace: {request.namespace}')
+    
+    # Get connected clients count properly
     connected_clients = len(socketio.server.manager.rooms.get('/', {}).get('', set()))
     print(f'Total connected clients: {connected_clients}')
+    
+    # Emit connection status
     emit('status', {'status': 'connected', 'server_version': '1.0.0'})
-    # Also emit current system status
+    
+    # Emit comprehensive system status
+    emit('system_status', {
+        'status': 'running',
+        'streaming': streaming_active,
+        'connected_clients': connected_clients,
+        'components': {
+            'data_loader': 'loaded',
+            'preprocessor': 'loaded', 
+            'feature_extractor': 'loaded',
+            'classifier': 'loaded'
+        },
+        'timestamp': datetime.now().isoformat()
+    })
+    
+    # Emit streaming status
+    emit('streaming_status', {
+        'status': 'active' if streaming_active else 'inactive',
+        'timestamp': datetime.now().isoformat()
+    })
+
+@socketio.on('disconnect')
+def handle_disconnect():
+    print(f'Client disconnected: {request.sid}')
+    connected_clients = len(socketio.server.manager.rooms.get("/", {}).get("", set()))
+    print(f'Remaining connected clients: {connected_clients}')
+    
+    # Emit updated system status
+    emit('system_status', {
+        'status': 'running',
+        'streaming': streaming_active,
+        'connected_clients': connected_clients,
+        'components': {
+            'data_loader': 'loaded',
+            'preprocessor': 'loaded', 
+            'feature_extractor': 'loaded',
+            'classifier': 'loaded'
+        },
+        'timestamp': datetime.now().isoformat()
+    }, broadcast=True)
+
+@socketio.on('request_status')
+def handle_status_request():
+    """Handle status request from client."""
+    connected_clients = len(socketio.server.manager.rooms.get('/', {}).get('', set()))
     emit('system_status', {
         'status': 'running',
         'streaming': streaming_active,
@@ -324,15 +387,25 @@ def handle_connect(auth=None):
         'timestamp': datetime.now().isoformat()
     })
 
-@socketio.on('disconnect')
-def handle_disconnect():
-    print(f'Client disconnected: {request.sid}')
-    print(f'Remaining connected clients: {len(socketio.server.manager.rooms.get("/", {}).get("", set()))}')
-
 @socketio.on('start_streaming')
 def handle_start_streaming():
-    print('Client requested streaming start')
-    # Streaming is handled by the API endpoint
+    """Handle start streaming request from client."""
+    global streaming_active
+    if not streaming_active:
+        streaming_active = True
+        emit('streaming_status', {'status': 'started'})
+        print("Streaming started via Socket.IO")
+    else:
+        emit('streaming_status', {'status': 'already_active'})
+
+@socketio.on('stop_streaming')
+def handle_stop_streaming():
+    """Handle stop streaming request from client."""
+    global streaming_active
+    streaming_active = False
+    emit('streaming_status', {'status': 'stopped'})
+    print("Streaming stopped via Socket.IO")
+
 
 @socketio.on('stop_streaming')
 def handle_stop_streaming():

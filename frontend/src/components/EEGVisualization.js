@@ -12,8 +12,8 @@ const EEGVisualization = ({ eegData, streaming }) => {
   const updatePlot = useCallback((data) => {
     const now = Date.now();
     
-    // Throttle updates to prevent flickering
-    if (now - lastUpdateRef.current < 200) { // Update max every 200ms
+    // Throttle updates to prevent flickering - much longer delay for smoother visualization
+    if (now - lastUpdateRef.current < 1000) { // Update max every 1 second
       return;
     }
     lastUpdateRef.current = now;
