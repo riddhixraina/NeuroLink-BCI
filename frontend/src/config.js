@@ -1,10 +1,10 @@
 // Production configuration for NeuroLink-BCI Frontend
 const config = {
   // API Configuration
-  API_BASE_URL: process.env.REACT_APP_API_URL || 'http://localhost:5000',
+  API_BASE_URL: process.env.REACT_APP_API_URL || 'https://neurolink-bci-production.up.railway.app',
   
   // WebSocket Configuration  
-  WS_URL: process.env.REACT_APP_WS_URL || 'ws://localhost:5000',
+  WS_URL: process.env.REACT_APP_WS_URL || 'wss://neurolink-bci-production.up.railway.app',
   
   // Environment
   NODE_ENV: process.env.NODE_ENV || 'development',
