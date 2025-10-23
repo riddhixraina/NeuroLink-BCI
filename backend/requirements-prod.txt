@@ -25,18 +25,9 @@ plotly==5.15.0
 # Utilities
 python-dotenv==1.0.0
 gunicorn==21.2.0
-gevent==23.2.1
+gevent==23.9.1
 gevent-websocket==0.10.1
 
 # Security
 Werkzeug==2.3.7
 Jinja2==3.1.2
-
-# Monitoring (optional)
-sentry-sdk[flask]==1.32.0
-
-# Development (optional)
-pytest==7.4.0
-pytest-flask==1.2.0
-black==23.7.0
-flake8==6.0.0
