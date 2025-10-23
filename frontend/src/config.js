@@ -2,16 +2,16 @@
 const config = {
   // API Configuration - ensure it's a complete URL
   API_BASE_URL: (() => {
-    const url = process.env.REACT_APP_API_URL || 'https://neurolink-bci-production.up.railway.app';
-    // If URL doesn't start with http, add https://
-    return url.startsWith('http') ? url : `https://${url}`;
+    const url = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+    // If URL doesn't start with http, add http://
+    return url.startsWith('http') ? url : `http://${url}`;
   })(),
   
   // WebSocket Configuration - ensure it's a complete URL
   WS_URL: (() => {
-    const url = process.env.REACT_APP_WS_URL || 'wss://neurolink-bci-production.up.railway.app';
-    // If URL doesn't start with ws, add wss://
-    return url.startsWith('ws') ? url : `wss://${url}`;
+    const url = process.env.REACT_APP_WS_URL || 'ws://localhost:5000';
+    // If URL doesn't start with ws, add ws://
+    return url.startsWith('ws') ? url : `ws://${url}`;
   })(),
   
   // Environment

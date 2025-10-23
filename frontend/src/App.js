@@ -67,8 +67,13 @@ function App() {
     
     // Only update state if no manual override is set
     if (!manualStateOverride && data.prediction) {
-      setCurrentState(data.prediction.predicted_state);
-      setConfidence(data.prediction.confidence);
+      // Throttle state updates to prevent rapid flickering
+      const now = Date.now();
+      if (now - (dataBufferRef.current.lastStateUpdate || 0) > 1000) { // Update state max every 1 second
+        setCurrentState(data.prediction.predicted_state);
+        setConfidence(data.prediction.confidence);
+        dataBufferRef.current.lastStateUpdate = now;
+      }
     }
 
     // Calculate novelty score using improved algorithm

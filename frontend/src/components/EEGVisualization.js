@@ -6,11 +6,27 @@ const EEGVisualization = ({ eegData, streaming }) => {
   const [plotData, setPlotData] = useState([]);
   const [layout, setLayout] = useState({});
   const plotRef = useRef(null);
+  const dataBufferRef = useRef([]);
+  const lastUpdateRef = useRef(0);
 
   const updatePlot = useCallback((data) => {
+    const now = Date.now();
+    
+    // Throttle updates to prevent flickering
+    if (now - lastUpdateRef.current < 200) { // Update max every 200ms
+      return;
+    }
+    lastUpdateRef.current = now;
+    
+    console.log('EEGVisualization: updatePlot called with data:', data);
     const { eeg_data, channel_names, sampling_rate } = data;
     
-    if (!eeg_data || !channel_names) return;
+    if (!eeg_data || !channel_names) {
+      console.log('EEGVisualization: Missing data - eeg_data:', !!eeg_data, 'channel_names:', !!channel_names);
+      return;
+    }
+
+    console.log('EEGVisualization: Processing data - channels:', eeg_data.length, 'samples:', eeg_data[0]?.length);
 
     // Create time axis (assuming 2 seconds of data)
     const timePoints = eeg_data[0].length;
@@ -24,6 +40,8 @@ const EEGVisualization = ({ eegData, streaming }) => {
     for (let i = 0; i < maxChannels; i++) {
       const offset = i * 100; // Offset for better visualization
       const yValues = eeg_data[i].map(value => value + offset);
+      
+      console.log(`EEGVisualization: Channel ${i} - first 5 values:`, yValues.slice(0, 5));
       
       traces.push({
         x: timeAxis,
@@ -39,6 +57,7 @@ const EEGVisualization = ({ eegData, streaming }) => {
       });
     }
 
+    console.log('EEGVisualization: Setting plot data with', traces.length, 'traces');
     setPlotData(traces);
 
     setLayout({
@@ -68,8 +87,12 @@ const EEGVisualization = ({ eegData, streaming }) => {
   }, []);
 
   useEffect(() => {
+    console.log('EEGVisualization: useEffect triggered - eegData:', eegData);
     if (eegData && eegData.eeg_data && eegData.channel_names) {
+      console.log('EEGVisualization: Calling updatePlot with eegData');
       updatePlot(eegData);
+    } else {
+      console.log('EEGVisualization: No valid eegData to plot');
     }
   }, [eegData, updatePlot]);
 

@@ -132,7 +132,7 @@ def streaming_worker():
                 print(f"Error emitting EEG data: {e}")
             
             # Wait before next update
-            time.sleep(0.1)  # 10 Hz update rate
+            time.sleep(0.5)  # 2 Hz update rate - slower for better visualization
             
         except Exception as e:
             print(f"Error in streaming worker: {e}")
