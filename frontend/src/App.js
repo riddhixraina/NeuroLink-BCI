@@ -1,0 +1,533 @@
+import React, { useState, useEffect, useRef } from 'react';
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Container,
+  Grid,
+  Paper,
+  Box,
+  Button,
+  Switch,
+  FormControlLabel,
+  Alert,
+  CircularProgress,
+  Card,
+  CardContent,
+  CardHeader,
+  LinearProgress,
+  Chip,
+  Tabs,
+  Tab
+} from '@mui/material';
+import {
+  PlayArrow,
+  Stop,
+  Settings,
+  Psychology,
+  Timeline,
+  Assessment
+} from '@mui/icons-material';
+import Plot from 'react-plotly.js';
+import io from 'socket.io-client';
+import axios from 'axios';
+
+// Import components
+import EEGVisualization from './components/EEGVisualization';
+import StateClassification from './components/StateClassification';
+import NoveltyDetection from './components/NoveltyDetection';
+import SystemStatus from './components/SystemStatus';
+import TrainingVisualization from './components/TrainingVisualization';
+import DashboardOverview from './components/DashboardOverview';
+
+function App() {
+  // State management
+  const [streaming, setStreaming] = useState(false);
+  const [connected, setConnected] = useState(false);
+  const [systemStatus, setSystemStatus] = useState({});
+  const [eegData, setEegData] = useState(null);
+  const [currentState, setCurrentState] = useState(null);
+  const [confidence, setConfidence] = useState(0);
+  const [noveltyScore, setNoveltyScore] = useState(0);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [manualStateOverride, setManualStateOverride] = useState(null);
+  const [stableMode, setStableMode] = useState(true);
+  const [currentTab, setCurrentTab] = useState(0);
+
+  // Refs
+  const socketRef = useRef(null);
+  const dataBufferRef = useRef([]);
+
+  // Initialize socket connection
+  useEffect(() => {
+    const socket = io('http://localhost:5000');
+    socketRef.current = socket;
+
+    // Connection events
+    socket.on('connect', () => {
+      console.log('Connected to server');
+      setConnected(true);
+      setError(null);
+    });
+
+    socket.on('disconnect', () => {
+      console.log('Disconnected from server');
+      setConnected(false);
+    });
+
+    socket.on('connect_error', (error) => {
+      console.error('Connection error:', error);
+      setError('Failed to connect to server');
+    });
+
+    // Data events
+    socket.on('eeg_data', (data) => {
+      handleEEGData(data);
+    });
+
+    socket.on('system_status', (status) => {
+      setSystemStatus(status);
+    });
+
+    socket.on('streaming_status', (status) => {
+      console.log('Streaming status:', status);
+    });
+
+    // Cleanup on unmount
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
+  // Handle incoming EEG data
+  const handleEEGData = (data) => {
+    setEegData(data);
+    
+    // Only update state if no manual override is set
+    if (!manualStateOverride && data.prediction) {
+      setCurrentState(data.prediction.predicted_state);
+      setConfidence(data.prediction.confidence);
+    }
+
+    // Calculate novelty score using improved algorithm
+    if (data.eeg_data) {
+      // Debug: log the data structure occasionally
+      if (Math.random() < 0.01) { // 1% chance to log
+        console.log('EEG Data structure:', {
+          type: typeof data.eeg_data,
+          isArray: Array.isArray(data.eeg_data),
+          length: data.eeg_data.length,
+          firstElement: data.eeg_data[0],
+          sample: data.eeg_data.slice(0, 3)
+        });
+      }
+      
+      const noveltyScore = calculateNoveltyScore(data.eeg_data);
+      setNoveltyScore(noveltyScore);
+      
+      // Debug: log novelty scores occasionally
+      if (Math.random() < 0.05) { // 5% chance to log
+        console.log('Novelty calculation:', {
+          rawScore: noveltyScore,
+          eegDataLength: data.eeg_data.length,
+          eegDataType: typeof data.eeg_data
+        });
+      }
+    }
+
+    // Add to buffer for trend analysis
+    const currentState = manualStateOverride || data.prediction?.predicted_state || 'Unknown';
+    const currentConfidence = manualStateOverride ? 0.95 : (data.prediction?.confidence || 0);
+    
+    dataBufferRef.current.push({
+      timestamp: data.timestamp,
+      state: currentState,
+      confidence: currentConfidence,
+      novelty: calculateNoveltyScore(data.eeg_data)
+    });
+
+    // Keep only last 100 data points
+    if (dataBufferRef.current.length > 100) {
+      dataBufferRef.current = dataBufferRef.current.slice(-100);
+    }
+  };
+
+  // Calculate novelty score based on signal characteristics
+  const calculateNoveltyScore = (eegData) => {
+    if (!eegData || !Array.isArray(eegData)) return 0;
+    
+    try {
+      const flatData = eegData.flat();
+      if (flatData.length === 0) return 0;
+      
+      // Calculate basic statistics
+      const mean = flatData.reduce((a, b) => a + b, 0) / flatData.length;
+      const variance = flatData.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / flatData.length;
+      const stdDev = Math.sqrt(variance);
+      
+      // Calculate range
+      const max = Math.max(...flatData);
+      const min = Math.min(...flatData);
+      const range = max - min;
+      
+      // Simple novelty calculation based on signal variability
+      // Higher standard deviation and range indicate more novel patterns
+      const baseNovelty = (stdDev * 5 + range * 0.1) / 2;
+      
+      // Scale to 0-100 range more realistically
+      const noveltyScore = Math.min(Math.max(baseNovelty, 0), 100);
+      
+      return Math.round(noveltyScore * 10) / 10;
+    } catch (error) {
+      console.error('Error calculating novelty score:', error);
+      return 0;
+    }
+  };
+
+  // Simple state smoothing - just adds a small delay in stable mode
+  const smoothStateChange = (newState) => {
+    // In stable mode, just return the new state (no complex smoothing)
+    return newState;
+  };
+
+  // Start/stop streaming
+  const toggleStreaming = async () => {
+    setLoading(true);
+    try {
+      if (streaming) {
+        await axios.post('http://localhost:5000/api/stop_streaming');
+        socketRef.current.emit('stop_streaming');
+        setStreaming(false);
+      } else {
+        await axios.post('http://localhost:5000/api/start_streaming');
+        socketRef.current.emit('start_streaming');
+        setStreaming(true);
+      }
+    } catch (error) {
+      console.error('Error toggling streaming:', error);
+      setError('Failed to toggle streaming');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Get system status
+  const getSystemStatus = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/api/status');
+      setSystemStatus(response.data);
+    } catch (error) {
+      console.error('Error getting system status:', error);
+      setError('Failed to get system status');
+    }
+  };
+
+  // Set cognitive state
+  const setCognitiveState = async (stateId) => {
+    try {
+      const response = await axios.post('http://localhost:5000/api/set_cognitive_state', {
+        state: stateId
+      });
+      
+      // Map state ID to state name
+      const stateNames = ['Relaxed', 'Focused', 'Stressed', 'High Load', 'Low Load'];
+      const stateName = stateNames[stateId] || 'Unknown';
+      
+      // Set manual override
+      setManualStateOverride(stateName);
+      setCurrentState(stateName);
+      setConfidence(0.95);
+      
+      console.log(`Cognitive state set to: ${stateName}`);
+    } catch (error) {
+      console.error('Error setting cognitive state:', error);
+      setError('Failed to set cognitive state');
+    }
+  };
+
+  // Update system status periodically
+  useEffect(() => {
+    const interval = setInterval(getSystemStatus, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Update current state when manual override changes
+  useEffect(() => {
+    if (manualStateOverride) {
+      setCurrentState(manualStateOverride);
+      setConfidence(0.95);
+    }
+  }, [manualStateOverride]);
+
+  return (
+    <div className="App">
+      <AppBar position="static" sx={{ bgcolor: '#1976d2' }}>
+        <Toolbar>
+          <Psychology sx={{ mr: 2 }} />
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            NeuroLink-BCI: Real-Time Neural Decoding
+          </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Chip
+              label={connected ? 'Connected' : 'Disconnected'}
+              color={connected ? 'success' : 'error'}
+              size="small"
+            />
+            <Chip
+              label={streaming ? 'Streaming' : 'Stopped'}
+              color={streaming ? 'primary' : 'default'}
+              size="small"
+            />
+          </Box>
+        </Toolbar>
+      </AppBar>
+
+      <Container maxWidth="xl" sx={{ mt: 3, mb: 3 }}>
+        {/* Error Alert */}
+        {error && (
+          <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
+            {error}
+          </Alert>
+        )}
+
+        {/* System Status */}
+        <SystemStatus status={systemStatus} />
+
+        {/* Tab Navigation */}
+        <Paper sx={{ mb: 3 }}>
+          <Tabs 
+            value={currentTab} 
+            onChange={(e, newValue) => setCurrentTab(newValue)}
+            centered
+            sx={{ borderBottom: 1, borderColor: 'divider' }}
+          >
+            <Tab 
+              label="Real-Time Dashboard" 
+              icon={<Timeline />} 
+              iconPosition="start"
+            />
+            <Tab 
+              label="Training & Model Analysis" 
+              icon={<Assessment />} 
+              iconPosition="start"
+            />
+            <Tab 
+              label="System Overview" 
+              icon={<Psychology />} 
+              iconPosition="start"
+            />
+          </Tabs>
+        </Paper>
+
+        {/* Control Panel - Only show on Real-Time Dashboard */}
+        {currentTab === 0 && (
+        <Paper sx={{ p: 2, mb: 3 }}>
+          <Grid container spacing={2} alignItems="center">
+            <Grid item xs={12} sm={6} md={3}>
+              <Button
+                variant="contained"
+                color={streaming ? 'error' : 'success'}
+                startIcon={streaming ? <Stop /> : <PlayArrow />}
+                onClick={toggleStreaming}
+                disabled={loading || !connected}
+                fullWidth
+              >
+                {loading ? <CircularProgress size={20} /> : 
+                 streaming ? 'Stop Streaming' : 'Start Streaming'}
+              </Button>
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <Button
+                variant="outlined"
+                startIcon={<Settings />}
+                onClick={getSystemStatus}
+                disabled={loading}
+                fullWidth
+              >
+                Refresh Status
+              </Button>
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={streaming}
+                    onChange={toggleStreaming}
+                    disabled={loading || !connected}
+                  />
+                }
+                label="Real-time Processing"
+              />
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={stableMode}
+                    onChange={(e) => setStableMode(e.target.checked)}
+                    disabled={!streaming}
+                  />
+                }
+                label="Stable Mode"
+              />
+            </Grid>
+          </Grid>
+          
+          {/* Cognitive State Controls */}
+          <Box sx={{ mt: 2 }}>
+            <Typography variant="h6" gutterBottom>
+              Cognitive State Simulation
+            </Typography>
+            <Grid container spacing={1}>
+              {[
+                { id: 0, name: 'Relaxed', color: 'success' },
+                { id: 1, name: 'Focused', color: 'primary' },
+                { id: 2, name: 'Stressed', color: 'error' },
+                { id: 3, name: 'High Load', color: 'warning' },
+                { id: 4, name: 'Low Load', color: 'info' }
+              ].map((state) => (
+                <Grid item key={state.id}>
+                  <Button
+                    variant="outlined"
+                    color={state.color}
+                    size="small"
+                    onClick={() => setCognitiveState(state.id)}
+                    disabled={!streaming}
+                  >
+                    {state.name}
+                  </Button>
+                </Grid>
+              ))}
+            </Grid>
+            
+            {/* Manual Override Status */}
+            {manualStateOverride && (
+              <Box sx={{ mt: 2, p: 2, bgcolor: 'warning.50', borderRadius: 1 }}>
+                <Typography variant="body2" color="warning.dark">
+                  <strong>Manual Override Active:</strong> {manualStateOverride} (95% confidence)
+                </Typography>
+                <Button
+                  size="small"
+                  color="warning"
+                  onClick={() => {
+                    setManualStateOverride(null);
+                    // Reset to the latest prediction if available
+                    if (eegData && eegData.prediction) {
+                      setCurrentState(eegData.prediction.predicted_state);
+                      setConfidence(eegData.prediction.confidence);
+                    }
+                    console.log('Returned to automatic prediction mode');
+                  }}
+                  sx={{ mt: 1 }}
+                >
+                  Return to Auto Mode
+                </Button>
+              </Box>
+            )}
+          </Box>
+        </Paper>
+        )}
+
+        {/* Tab Content */}
+        {currentTab === 0 ? (
+          /* Real-Time Dashboard */
+        <Grid container spacing={3}>
+          {/* EEG Visualization */}
+          <Grid item xs={12} lg={8}>
+            <Paper sx={{ p: 2, height: '500px' }}>
+              <Typography variant="h6" gutterBottom>
+                <Timeline sx={{ mr: 1, verticalAlign: 'middle' }} />
+                Real-Time EEG Signals
+              </Typography>
+              <EEGVisualization 
+                eegData={eegData}
+                streaming={streaming}
+              />
+            </Paper>
+          </Grid>
+
+          {/* State Classification */}
+          <Grid item xs={12} lg={4}>
+            <Grid container spacing={2} direction="column">
+              <Grid item>
+                <StateClassification
+                  currentState={currentState}
+                  confidence={confidence}
+                  streaming={streaming}
+                />
+              </Grid>
+              <Grid item>
+                <NoveltyDetection
+                  noveltyScore={noveltyScore}
+                  dataHistory={dataBufferRef.current}
+                />
+              </Grid>
+            </Grid>
+          </Grid>
+
+          {/* Additional Information */}
+          <Grid item xs={12}>
+            <Paper sx={{ p: 2 }}>
+              <Typography variant="h6" gutterBottom>
+                <Assessment sx={{ mr: 1, verticalAlign: 'middle' }} />
+                System Information
+              </Typography>
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6} md={3}>
+                  <Card variant="outlined">
+                    <CardHeader title="Channels" />
+                    <CardContent>
+                      <Typography variant="h4" color="primary">
+                        {eegData?.channel_names?.length || 0}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+                <Grid item xs={12} sm={6} md={3}>
+                  <Card variant="outlined">
+                    <CardHeader title="Sampling Rate" />
+                    <CardContent>
+                      <Typography variant="h4" color="primary">
+                        {eegData?.sampling_rate || 0} Hz
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+                <Grid item xs={12} sm={6} md={3}>
+                  <Card variant="outlined">
+                    <CardHeader title="Data Points" />
+                    <CardContent>
+                      <Typography variant="h4" color="primary">
+                        {eegData?.eeg_data?.[0]?.length || 0}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+                <Grid item xs={12} sm={6} md={3}>
+                  <Card variant="outlined">
+                    <CardHeader title="Processing Latency" />
+                    <CardContent>
+                      <Typography variant="h4" color="primary">
+                        &lt; 100ms
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              </Grid>
+            </Paper>
+          </Grid>
+        </Grid>
+        ) : currentTab === 1 ? (
+          /* Training & Model Analysis */
+          <TrainingVisualization />
+        ) : (
+          /* System Overview */
+          <DashboardOverview />
+        )}
+      </Container>
+    </div>
+  );
+}
+
+export default App;

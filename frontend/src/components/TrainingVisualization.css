@@ -1,0 +1,474 @@
+/* Training Visualization Styles */
+.training-viz-container {
+  padding: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  color: white;
+}
+
+.training-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 20px;
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+}
+
+.training-header h2 {
+  margin: 0;
+  font-size: 2.5rem;
+  background: linear-gradient(45deg, #fff, #e0e0e0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.training-controls {
+  display: flex;
+  gap: 15px;
+}
+
+.start-training-btn, .refresh-btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 25px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+}
+
+.start-training-btn {
+  background: linear-gradient(45deg, #4CAF50, #45a049);
+  color: white;
+}
+
+.start-training-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+}
+
+.start-training-btn:disabled {
+  background: #666;
+  cursor: not-allowed;
+}
+
+.refresh-btn {
+  background: linear-gradient(45deg, #2196F3, #1976D2);
+  color: white;
+}
+
+.refresh-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(33, 150, 243, 0.4);
+}
+
+/* Loading and Error States */
+.loading-spinner, .error-message, .no-model-message {
+  text-align: center;
+  padding: 60px 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid rgba(255, 255, 255, 0.3);
+  border-top: 5px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error-message button, .no-model-message button {
+  margin-top: 20px;
+  padding: 12px 24px;
+  background: linear-gradient(45deg, #F44336, #d32f2f);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* Model Overview */
+.model-overview {
+  margin-bottom: 30px;
+}
+
+.model-overview h3 {
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.overview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.overview-card {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 25px;
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.overview-card h4 {
+  margin: 0 0 15px 0;
+  font-size: 1.3rem;
+  color: #FFD700;
+}
+
+.overview-card p {
+  margin: 8px 0;
+  font-size: 1rem;
+}
+
+/* Training Curves */
+.training-curves {
+  margin-bottom: 30px;
+}
+
+.training-curves h3 {
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+  gap: 20px;
+}
+
+.chart-container {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 25px;
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.chart-container h4 {
+  margin: 0 0 20px 0;
+  font-size: 1.3rem;
+  text-align: center;
+  color: #FFD700;
+}
+
+/* Performance Metrics */
+.performance-metrics {
+  margin-bottom: 30px;
+}
+
+.performance-metrics h3 {
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.metric-card {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 25px;
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  text-align: center;
+}
+
+.metric-card h4 {
+  margin: 0 0 15px 0;
+  font-size: 1.2rem;
+  color: #FFD700;
+}
+
+.metric-value {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin: 10px 0;
+  background: linear-gradient(45deg, #4CAF50, #45a049);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.metric-label {
+  font-size: 0.9rem;
+  color: #ccc;
+}
+
+/* Cross-Validation */
+.cross-validation {
+  margin-bottom: 30px;
+}
+
+.cross-validation h3 {
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.cv-grid {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.cv-card {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 25px;
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  text-align: center;
+}
+
+.cv-card h4 {
+  margin: 0 0 15px 0;
+  font-size: 1.3rem;
+  color: #FFD700;
+}
+
+.cv-value {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin: 10px 0;
+  background: linear-gradient(45deg, #2196F3, #1976D2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.cv-std {
+  font-size: 1rem;
+  color: #ccc;
+}
+
+.cv-chart {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 25px;
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.cv-chart h4 {
+  margin: 0 0 20px 0;
+  font-size: 1.3rem;
+  text-align: center;
+  color: #FFD700;
+}
+
+/* Confusion Matrix */
+.confusion-matrix {
+  margin-bottom: 30px;
+}
+
+.confusion-matrix h3 {
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.confusion-grid {
+  display: flex;
+  justify-content: center;
+}
+
+.confusion-table {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  overflow: hidden;
+}
+
+.confusion-table th,
+.confusion-table td {
+  padding: 12px 16px;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.confusion-table th {
+  background: rgba(255, 255, 255, 0.2);
+  font-weight: bold;
+  color: #FFD700;
+}
+
+.state-label {
+  font-weight: bold;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.confusion-cell {
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.confusion-cell:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+/* Cognitive States Distribution */
+.states-distribution {
+  margin-bottom: 30px;
+}
+
+.states-distribution h3 {
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.states-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.state-card {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 25px;
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+  border: 2px solid;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.state-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.state-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 15px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: white;
+}
+
+.state-card h4 {
+  margin: 0 0 10px 0;
+  font-size: 1.2rem;
+}
+
+.state-card p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #ccc;
+}
+
+/* Training Summary */
+.training-summary {
+  margin-bottom: 30px;
+}
+
+.training-summary h3 {
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.summary-content {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 25px;
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.summary-content p {
+  margin: 12px 0;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.summary-content strong {
+  color: #FFD700;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .training-viz-container {
+    padding: 10px;
+  }
+  
+  .training-header {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .training-header h2 {
+    font-size: 2rem;
+  }
+  
+  .charts-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .cv-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .overview-grid,
+  .metrics-grid,
+  .states-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .confusion-table {
+    font-size: 0.8rem;
+  }
+  
+  .confusion-table th,
+  .confusion-table td {
+    padding: 8px 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .training-header h2 {
+    font-size: 1.5rem;
+  }
+  
+  .chart-container {
+    padding: 15px;
+  }
+  
+  .metric-value {
+    font-size: 2rem;
+  }
+  
+  .cv-value {
+    font-size: 2rem;
+  }
+}

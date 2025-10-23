@@ -1,0 +1,245 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f5f5f5;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Animation for real-time updates */
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.streaming-indicator {
+  animation: pulse 2s infinite;
+}
+
+/* EEG signal visualization */
+.eeg-signal {
+  stroke-width: 1px;
+  fill: none;
+}
+
+.eeg-signal:hover {
+  stroke-width: 2px;
+}
+
+/* Status indicators */
+.status-online {
+  color: #4caf50;
+}
+
+.status-offline {
+  color: #f44336;
+}
+
+.status-warning {
+  color: #ff9800;
+}
+
+/* Custom chart styling */
+.plotly-chart {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Loading spinner */
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .MuiContainer-root {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+  
+  .MuiCard-root {
+    margin-bottom: 16px;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #121212;
+    color: #ffffff;
+  }
+}
+
+/* Custom button styles */
+.neural-button {
+  background: linear-gradient(45deg, #1976d2 30%, #42a5f5 90%);
+  border: 0;
+  border-radius: 8px;
+  color: white;
+  padding: 8px 16px;
+  font-weight: 600;
+  text-transform: none;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  transition: all 0.3s ease;
+}
+
+.neural-button:hover {
+  background: linear-gradient(45deg, #1565c0 30%, #1976d2 90%);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  transform: translateY(-1px);
+}
+
+/* EEG channel labels */
+.eeg-channel-label {
+  font-size: 10px;
+  font-weight: 500;
+  fill: #666;
+}
+
+/* State classification colors */
+.state-relaxed {
+  color: #4caf50;
+}
+
+.state-focused {
+  color: #2196f3;
+}
+
+.state-stressed {
+  color: #f44336;
+}
+
+.state-high-load {
+  color: #ff9800;
+}
+
+.state-low-load {
+  color: #00bcd4;
+}
+
+/* Novelty detection indicators */
+.novelty-high {
+  background-color: #ffebee;
+  border-left: 4px solid #f44336;
+}
+
+.novelty-medium {
+  background-color: #fff3e0;
+  border-left: 4px solid #ff9800;
+}
+
+.novelty-low {
+  background-color: #e8f5e8;
+  border-left: 4px solid #4caf50;
+}
+
+/* Real-time data indicators */
+.realtime-indicator {
+  position: relative;
+  overflow: hidden;
+}
+
+.realtime-indicator::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* Custom tooltip styles */
+.custom-tooltip {
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+/* EEG signal grid */
+.eeg-grid {
+  stroke: #e0e0e0;
+  stroke-width: 0.5;
+  opacity: 0.5;
+}
+
+/* Status badges */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-badge.success {
+  background-color: #e8f5e8;
+  color: #2e7d32;
+}
+
+.status-badge.error {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+.status-badge.warning {
+  background-color: #fff3e0;
+  color: #ef6c00;
+}
+
+.status-badge.info {
+  background-color: #e3f2fd;
+  color: #1565c0;
+}
