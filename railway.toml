@@ -2,7 +2,7 @@
 builder = "nixpacks"
 
 [deploy]
-startCommand = "python backend/app.py"
+startCommand = "python backend/app_lightweight.py"
 healthcheckPath = "/api/health"
 healthcheckTimeout = 300
 restartPolicyType = "on_failure"
@@ -10,3 +10,7 @@ restartPolicyType = "on_failure"
 [env]
 FLASK_ENV = "production"
 PORT = "5000"
+PYTHON_VERSION = "3.10"
+
+[build.env]
+PIP_REQUIREMENTS_FILE = "backend/requirements-railway.txt"
