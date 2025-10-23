@@ -31,10 +31,12 @@ git push -u origin main
 1. **Go to**: https://vercel.com
 2. **Sign up/Login** with GitHub
 3. **Import Project**: Select NeuroLink-BCI
-4. **Framework**: React
-5. **Build Command**: `cd frontend && npm run build`
-6. **Output Directory**: `frontend/build`
-7. **Deploy**
+4. **Framework**: Create React App
+5. **Root Directory**: `frontend`
+6. **Build Command**: `npm run build`
+7. **Output Directory**: `build`
+8. **Install Command**: `npm install`
+9. **Deploy**
 
 ### Step 4: Deploy Backend to Railway (3 minutes)
 1. **Go to**: https://railway.app
