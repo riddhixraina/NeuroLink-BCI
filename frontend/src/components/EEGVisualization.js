@@ -92,7 +92,15 @@ const EEGVisualization = ({ eegData, streaming }) => {
           responsive: true,
           displayModeBar: true,
           displaylogo: false,
-          modeBarButtonsToRemove: ['pan2d', 'lasso2d', 'select2d']
+          modeBarButtonsToRemove: ['pan2d', 'lasso2d', 'select2d'],
+          mapboxAccessToken: null,
+          toImageButtonOptions: {
+            format: 'png',
+            filename: 'eeg_plot',
+            height: 500,
+            width: 800,
+            scale: 1
+          }
         }}
       />
       
