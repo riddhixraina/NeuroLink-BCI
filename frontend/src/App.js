@@ -62,6 +62,9 @@ function App() {
   const handleEEGData = useCallback((data) => {
     setEegData(data);
     
+    // Update streaming status to active when receiving data
+    setStreaming(true);
+    
     // Only update state if no manual override is set
     if (!manualStateOverride && data.prediction) {
       setCurrentState(data.prediction.predicted_state);
@@ -147,10 +150,19 @@ function App() {
     socket.on('system_status', (status) => {
       console.log('Received system status:', status);
       setSystemStatus(status);
+      // Update streaming status based on backend status
+      if (status.streaming) {
+        setStreaming(true);
+      }
     });
 
     socket.on('streaming_status', (status) => {
       console.log('Received streaming status:', status);
+      if (status.status === 'started') {
+        setStreaming(true);
+      } else if (status.status === 'stopped') {
+        setStreaming(false);
+      }
     });
 
     socket.on('status', (status) => {
