@@ -137,6 +137,17 @@ def test():
         'user_agent': request.headers.get('User-Agent', 'No user agent')
     })
 
+@app.route('/api/debug', methods=['GET', 'POST', 'PUT', 'DELETE'])
+def debug():
+    return jsonify({
+        'method': request.method,
+        'url': request.url,
+        'headers': dict(request.headers),
+        'data': request.get_data(as_text=True),
+        'json': request.get_json(silent=True),
+        'timestamp': datetime.now().isoformat()
+    })
+
 @app.route('/api/status')
 def status():
     return jsonify({
