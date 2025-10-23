@@ -23,7 +23,9 @@ socketio = SocketIO(
     engineio_logger=True,
     always_connect=True,
     ping_timeout=60,
-    ping_interval=25
+    ping_interval=25,
+    async_mode='threading',
+    transports=['websocket', 'polling']
 )
 
 # Global variables
@@ -98,13 +100,25 @@ def streaming_worker():
             }
             
             # Emit to connected clients
-            connected_clients = len(socketio.server.manager.rooms.get('/', {}).get('', set()))
-            print(f"Emitting EEG data to clients. Connected clients: {connected_clients}")
-            if connected_clients > 0:
+            try:
+                # Try different ways to count connected clients
+                connected_clients = 0
+                try:
+                    connected_clients = len(socketio.server.manager.rooms.get('/', {}).get('', set()))
+                except:
+                    try:
+                        connected_clients = len(socketio.server.manager.rooms.get('/', {}))
+                    except:
+                        connected_clients = 0
+                
+                print(f"Emitting EEG data to clients. Connected clients: {connected_clients}")
+                
+                # Always emit data - let Socket.IO handle if no clients are connected
                 socketio.emit('eeg_data', combined_data)
-                print(f"EEG data emitted successfully to {connected_clients} clients")
-            else:
-                print("No connected clients to emit data to")
+                print(f"EEG data emitted (connected clients: {connected_clients})")
+                
+            except Exception as e:
+                print(f"Error emitting EEG data: {e}")
             
             # Wait before next update
             time.sleep(0.1)  # 10 Hz update rate
@@ -158,26 +172,32 @@ def debug():
 def test_socketio():
     """Test endpoint to emit a test message via Socket.IO"""
     try:
-        connected_clients = len(socketio.server.manager.rooms.get('/', {}).get('', set()))
+        # Try different ways to count connected clients
+        connected_clients = 0
+        try:
+            connected_clients = len(socketio.server.manager.rooms.get('/', {}).get('', set()))
+        except:
+            try:
+                connected_clients = len(socketio.server.manager.rooms.get('/', {}))
+            except:
+                connected_clients = 0
+        
         print(f"Test Socket.IO: {connected_clients} clients connected")
         
-        if connected_clients > 0:
-            socketio.emit('test_message', {
-                'message': 'Hello from backend!',
-                'timestamp': datetime.now().isoformat(),
-                'connected_clients': connected_clients
-            })
-            return jsonify({
-                'status': 'success',
-                'message': f'Test message sent to {connected_clients} clients',
-                'connected_clients': connected_clients
-            })
-        else:
-            return jsonify({
-                'status': 'no_clients',
-                'message': 'No clients connected to receive test message',
-                'connected_clients': 0
-            })
+        # Always emit test message - let Socket.IO handle it
+        socketio.emit('test_message', {
+            'message': 'Hello from backend!',
+            'timestamp': datetime.now().isoformat(),
+            'connected_clients': connected_clients
+        })
+        
+        return jsonify({
+            'status': 'success',
+            'message': f'Test message sent (detected {connected_clients} clients)',
+            'connected_clients': connected_clients,
+            'note': 'Message sent regardless of client count - Socket.IO will handle delivery'
+        })
+        
     except Exception as e:
         return jsonify({
             'status': 'error',
