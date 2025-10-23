@@ -3,7 +3,7 @@
 
 set -e
 
-echo "🚀 NeuroLink-BCI Multi-Platform Deployment"
+echo " NeuroLink-BCI Multi-Platform Deployment"
 echo "=========================================="
 echo ""
 
@@ -212,10 +212,10 @@ esac
 
 print_header "Deployment completed!"
 echo ""
-echo "📋 Next steps:"
+echo " Next steps:"
 echo "1. Update frontend environment variables with backend URLs"
 echo "2. Test all endpoints"
 echo "3. Configure custom domains (optional)"
 echo "4. Set up monitoring and alerts"
 echo ""
-echo "🎉 Your NeuroLink-BCI is now live!"
+echo " Your NeuroLink-BCI is now live!"

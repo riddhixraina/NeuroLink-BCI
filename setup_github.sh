@@ -3,7 +3,7 @@
 
 set -e
 
-echo "🚀 Setting up GitHub repository for NeuroLink-BCI..."
+echo " Setting up GitHub repository for NeuroLink-BCI..."
 
 # Colors for output
 RED='\033[0;31m'
@@ -68,7 +68,7 @@ git checkout main
 
 print_header "Repository setup completed!"
 echo ""
-echo "📋 Next steps:"
+echo " Next steps:"
 echo "1. Create a new repository on GitHub:"
 echo "   - Go to https://github.com/new"
 echo "   - Name it 'NeuroLink-BCI'"
@@ -95,14 +95,14 @@ echo "6. Set up deployment:"
 echo "   - Configure your production server"
 echo "   - Run ./deploy.sh for production deployment"
 echo ""
-echo "🎉 Your NeuroLink-BCI project is ready for GitHub!"
+echo " Your NeuroLink-BCI project is ready for GitHub!"
 
 # Create a simple push script
 cat > push_to_github.sh << 'EOF'
 #!/bin/bash
 # Quick push script for NeuroLink-BCI
 
-echo "🚀 Pushing NeuroLink-BCI to GitHub..."
+echo " Pushing NeuroLink-BCI to GitHub..."
 
 # Check if remote exists
 if ! git remote get-url origin &> /dev/null; then
@@ -121,7 +121,7 @@ git commit -m "Update: $(date '+%Y-%m-%d %H:%M:%S')"
 git push origin main
 git push origin develop
 
-echo "✅ Successfully pushed to GitHub!"
+echo " Successfully pushed to GitHub!"
 EOF
 
 chmod +x push_to_github.sh

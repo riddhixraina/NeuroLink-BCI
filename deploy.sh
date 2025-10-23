@@ -3,7 +3,7 @@
 
 set -e  # Exit on any error
 
-echo "🚀 Starting NeuroLink-BCI Production Deployment..."
+echo " Starting NeuroLink-BCI Production Deployment..."
 
 # Colors for output
 RED='\033[0;31m'
@@ -204,10 +204,10 @@ cat > health_check.sh << 'EOF'
 
 # Check if the service is running
 if curl -f http://localhost:5000/api/health > /dev/null 2>&1; then
-    echo "✅ Service is healthy"
+    echo " Service is healthy"
     exit 0
 else
-    echo "❌ Service is not responding"
+    echo " Service is not responding"
     exit 1
 fi
 EOF
@@ -217,19 +217,19 @@ chmod +x health_check.sh
 # Final status
 print_status "Deployment completed successfully!"
 echo ""
-echo "📋 Next steps:"
+echo " Next steps:"
 echo "1. Update .env file with your production values"
 echo "2. Configure your domain in nginx.conf"
 echo "3. Install and start the systemd service"
 echo "4. Configure nginx and reload"
 echo "5. Test the deployment with: ./health_check.sh"
 echo ""
-echo "🌐 Your application will be available at:"
+echo " Your application will be available at:"
 echo "   Frontend: http://your-domain.com"
 echo "   Backend API: http://your-domain.com/api/"
 echo "   WebSocket: ws://your-domain.com/socket.io/"
 echo ""
-echo "📊 Monitor logs with:"
+echo " Monitor logs with:"
 echo "   tail -f logs/app.log"
 echo "   tail -f logs/access.log"
 echo "   tail -f logs/error.log"

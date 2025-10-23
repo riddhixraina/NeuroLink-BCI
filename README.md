@@ -1,4 +1,4 @@
-# 🧠 NeuroLink-BCI: Real-Time Neural Decoding System
+# NeuroLink-BCI: Real-Time Neural Decoding System
 
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://python.org)
 [![React](https://img.shields.io/badge/React-18.2.0-blue.svg)](https://reactjs.org)
@@ -7,7 +7,7 @@
 
 A comprehensive Brain-Computer Interface (BCI) system that demonstrates real-time cognitive state classification from EEG signals using advanced machine learning techniques. This project showcases state-of-the-art neural signal processing capabilities with a focus on educational and research applications.
 
-## 🌟 Key Features
+## Key Features
 
 - **Real-Time EEG Processing**: Live visualization and classification of 32-channel EEG data
 - **CNN-LSTM Hybrid Model**: Advanced deep learning architecture for neural signal analysis
@@ -16,28 +16,28 @@ A comprehensive Brain-Computer Interface (BCI) system that demonstrates real-tim
 - **WebSocket Streaming**: Low-latency real-time data processing
 - **Production Ready**: Complete deployment configuration and monitoring
 
-## 🎯 Live Demo
+## Live Demo
 
 - **Frontend**: Interactive dashboard with real-time EEG visualization
 - **Training Analysis**: Comprehensive ML metrics and model performance
 - **System Overview**: Technical specifications and research applications
 
-## 🏗️ System Architecture
+## System Architecture
 
 ```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   EEG Hardware  │───▶│  Backend API    │───▶│  Frontend UI    │
-│   (32 channels) │    │  (Flask/Python) │    │  (React/JS)     │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-                              │
-                              ▼
-                       ┌─────────────────┐
-                       │  ML Pipeline    │
-                       │  (CNN-LSTM)     │
-                       └─────────────────┘
+        
+   EEG Hardware    Backend API      Frontend UI    
+   (32 channels)       (Flask/Python)       (React/JS)     
+        
+                              
+                              
+                       
+                         ML Pipeline    
+                         (CNN-LSTM)     
+                       
 ```
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 - Python 3.8+
@@ -47,13 +47,13 @@ A comprehensive Brain-Computer Interface (BCI) system that demonstrates real-tim
 ### Installation
 
 1. **Clone the repository**
-   ```bash
-   git clone https://github.com/yourusername/NeuroLink-BCI.git
-   cd NeuroLink-BCI
-   ```
+```bash
+git clone https://github.com/yourusername/NeuroLink-BCI.git
+cd NeuroLink-BCI
+```
 
 2. **Backend Setup**
-   ```bash
+```bash
    # Create virtual environment
    python -m venv venv
    source venv/bin/activate  # On Windows: venv\Scripts\activate
@@ -66,22 +66,22 @@ A comprehensive Brain-Computer Interface (BCI) system that demonstrates real-tim
    ```
 
 3. **Frontend Setup**
-   ```bash
+```bash
    cd frontend
-   npm install
-   ```
+npm install
+```
 
 ### Running the System
 
 1. **Development Mode**
-   ```bash
+```bash
    # Start backend
    python backend/app.py
-   
+
    # Start frontend (in another terminal)
-   cd frontend
-   npm start
-   ```
+cd frontend
+npm start
+```
 
 2. **Production Mode**
    ```bash
@@ -93,7 +93,7 @@ A comprehensive Brain-Computer Interface (BCI) system that demonstrates real-tim
    ./start_production.sh
    ```
 
-## 📊 Model Performance
+##  Model Performance
 
 | Metric | Value | Description |
 |--------|-------|-------------|
@@ -102,7 +102,7 @@ A comprehensive Brain-Computer Interface (BCI) system that demonstrates real-tim
 | **Cross-Validation** | 5-fold | Robust performance evaluation |
 | **Architecture** | CNN-LSTM | Hybrid deep learning model |
 
-## 🧪 Cognitive States Classification
+##  Cognitive States Classification
 
 The system classifies EEG signals into 5 cognitive states:
 
@@ -114,7 +114,7 @@ The system classifies EEG signals into 5 cognitive states:
 | **High Load** | Cognitive overload | Very high beta/gamma, low alpha |
 | **Low Load** | Minimal cognitive activity | Low overall activity, high alpha |
 
-## 🔬 Research Applications
+##  Research Applications
 
 ### Clinical Research
 - Cognitive load assessment
@@ -134,36 +134,36 @@ The system classifies EEG signals into 5 cognitive states:
 - Attention tracking
 - Cognitive assessment tools
 
-## 📁 Project Structure
+##  Project Structure
 
 ```
 NeuroLink-BCI/
-├── backend/                 # Flask backend API
-│   ├── app.py              # Main application
-│   ├── config.py           # Configuration management
-│   ├── streaming.py        # Real-time data simulation
-│   └── requirements-prod.txt
-├── frontend/               # React frontend
-│   ├── src/
-│   │   ├── components/     # React components
-│   │   └── App.js          # Main application
-│   └── package.json
-├── src/                    # Machine learning pipeline
-│   ├── model.py           # CNN-LSTM architecture
-│   ├── data_loader.py     # Dataset handling
-│   ├── feature_extraction.py
-│   └── preprocess.py
-├── scripts/               # Training and testing scripts
-│   ├── quick_train_model.py
-│   ├── improved_train_model.py
-│   └── test_improved_model.py
-├── models/                # Trained models and results
-├── docs/                  # Documentation
-├── deploy.sh             # Production deployment script
-└── README.md
+ backend/                 # Flask backend API
+    app.py              # Main application
+    config.py           # Configuration management
+    streaming.py        # Real-time data simulation
+    requirements-prod.txt
+ frontend/               # React frontend
+    src/
+       components/     # React components
+       App.js          # Main application
+    package.json
+ src/                    # Machine learning pipeline
+    model.py           # CNN-LSTM architecture
+    data_loader.py     # Dataset handling
+    feature_extraction.py
+    preprocess.py
+ scripts/               # Training and testing scripts
+    quick_train_model.py
+    improved_train_model.py
+    test_improved_model.py
+ models/                # Trained models and results
+ docs/                  # Documentation
+ deploy.sh             # Production deployment script
+ README.md
 ```
 
-## 🛠️ Technical Stack
+## Technical Stack
 
 ### Backend
 - **Framework**: Flask 2.3.3
@@ -185,7 +185,7 @@ NeuroLink-BCI/
 - **Validation**: 5-fold cross-validation
 - **Optimization**: Adam with learning rate scheduling
 
-## 🚀 Deployment
+## Deployment
 
 ### Production Deployment
 
@@ -221,7 +221,7 @@ The system is ready for deployment on:
 - **Azure**: Virtual Machines or Container Instances
 - **Heroku**: With Procfile configuration
 
-## 📈 Performance Monitoring
+## Performance Monitoring
 
 ### Health Checks
 ```bash
@@ -240,7 +240,7 @@ tail -f logs/error.log
 - **Memory Usage**: <2GB RAM for typical workloads
 - **CPU Usage**: Optimized for standard server hardware
 
-## 🧪 Testing
+## Testing
 
 ### Run Tests
 ```bash
@@ -261,14 +261,14 @@ python scripts/test_improved_model.py
 - Frontend component tests
 - End-to-end testing scenarios
 
-## 📚 Documentation
+## Documentation
 
 - **[API Documentation](docs/API.md)**: Complete REST API reference
 - **[Model Architecture](docs/MODEL.md)**: Detailed ML model documentation
 - **[Deployment Guide](docs/DEPLOYMENT.md)**: Production deployment instructions
 - **[Research Applications](docs/RESEARCH.md)**: Academic and research use cases
 
-## 🤝 Contributing
+##  Contributing
 
 We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
 
@@ -284,28 +284,26 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 - **JavaScript**: ESLint, Prettier
 - **Documentation**: Markdown with clear structure
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - **MNE-Python**: EEG signal processing library
 - **PyTorch**: Deep learning framework
 - **React Community**: Frontend framework and ecosystem
 - **Research Community**: BCI and neural engineering research
 
-## 📞 Contact
+## Contact
 
-- **Project Maintainer**: [Your Name]
-- **Email**: [your.email@domain.com]
-- **GitHub**: [@yourusername](https://github.com/yourusername)
+- **Project Maintainer**: [Riddhi Raina Prasad]
+- **Email**: [rrp4822@nyu.edu]
+- **GitHub**: [@riddhixraina](https://github.com/riddhixraina)
 - **LinkedIn**: [Your LinkedIn Profile]
 
-## 🌟 Star History
+##  Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=yourusername/NeuroLink-BCI&type=Date)](https://star-history.com/#yourusername/NeuroLink-BCI&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=riddhixraina/NeuroLink-BCI&type=Date)](https://star-history.com/#riddhixraina/NeuroLink-BCI&Date)
 
 ---
-
-**Made with ❤️ for the neuroscience and machine learning community**
