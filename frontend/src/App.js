@@ -15,7 +15,6 @@ import {
   Card,
   CardContent,
   CardHeader,
-  LinearProgress,
   Chip,
   Tabs,
   Tab
@@ -28,7 +27,6 @@ import {
   Timeline,
   Assessment
 } from '@mui/icons-material';
-import Plot from 'react-plotly.js';
 import io from 'socket.io-client';
 import axios from 'axios';
 import config from './config';
@@ -99,7 +97,7 @@ function App() {
     return () => {
       socket.disconnect();
     };
-  }, []);
+  }, [handleEEGData]);
 
   // Handle incoming EEG data
   const handleEEGData = (data) => {
@@ -187,10 +185,10 @@ function App() {
   };
 
   // Simple state smoothing - just adds a small delay in stable mode
-  const smoothStateChange = (newState) => {
-    // In stable mode, just return the new state (no complex smoothing)
-    return newState;
-  };
+  // const smoothStateChange = (newState) => {
+  //   // In stable mode, just return the new state (no complex smoothing)
+  //   return newState;
+  // };
 
   // Start/stop streaming
   const toggleStreaming = async () => {
@@ -227,7 +225,7 @@ function App() {
   // Set cognitive state
   const setCognitiveState = async (stateId) => {
     try {
-      const response = await axios.post(`${config.API_BASE_URL}/api/set_cognitive_state`, {
+      await axios.post(`${config.API_BASE_URL}/api/set_cognitive_state`, {
         state: stateId
       });
       

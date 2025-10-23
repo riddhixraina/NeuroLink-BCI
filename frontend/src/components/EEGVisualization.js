@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Plot from 'react-plotly.js';
-import { Box, Typography, Paper } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 
 const EEGVisualization = ({ eegData, streaming }) => {
   const [plotData, setPlotData] = useState([]);
@@ -11,7 +11,7 @@ const EEGVisualization = ({ eegData, streaming }) => {
     if (eegData && eegData.eeg_data && eegData.channel_names) {
       updatePlot(eegData);
     }
-  }, [eegData]);
+  }, [eegData, updatePlot]);
 
   const updatePlot = (data) => {
     const { eeg_data, channel_names, sampling_rate } = data;
