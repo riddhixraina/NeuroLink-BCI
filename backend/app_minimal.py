@@ -1,15 +1,20 @@
 """
 Ultra-minimal Flask Backend for Railway Deployment
-This version prioritizes startup speed and reliability
+This version prioritizes startup speed and reliability with Socket.IO support
 """
 
 from flask import Flask, request, jsonify
+from flask_socketio import SocketIO, emit
 from flask_cors import CORS
 import os
+import threading
+import time
+import numpy as np
 from datetime import datetime
 
 # Initialize Flask app
 app = Flask(__name__)
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-key')
 CORS(app, origins=[
     "https://neuro-link-bci.vercel.app",
     "https://neuro-link-bci-git-main-riddhixrainas-projects.vercel.app",
@@ -17,9 +22,88 @@ CORS(app, origins=[
     "http://localhost:3000",
     "http://localhost:3001"
 ])
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 # Global variables
 streaming_active = False
+streaming_thread = None
+
+def generate_mock_eeg_data():
+    """Generate realistic mock EEG data"""
+    n_channels = 32
+    n_samples = 256
+    sampling_rate = 256
+    
+    # Generate realistic EEG patterns
+    time_points = np.linspace(0, 1, n_samples)
+    
+    # Different frequency bands
+    alpha = np.sin(2 * np.pi * 10 * time_points)  # 10 Hz alpha
+    beta = np.sin(2 * np.pi * 20 * time_points)    # 20 Hz beta
+    theta = np.sin(2 * np.pi * 6 * time_points)   # 6 Hz theta
+    gamma = np.sin(2 * np.pi * 40 * time_points)  # 40 Hz gamma
+    
+    # Generate data for each channel
+    eeg_data = []
+    channel_names = [f'Channel_{i+1}' for i in range(n_channels)]
+    
+    for i in range(n_channels):
+        # Mix different frequency bands with noise
+        noise = np.random.normal(0, 0.1, n_samples)
+        signal = alpha + 0.5*beta + 0.3*theta + 0.2*gamma + noise
+        
+        # Add channel-specific variations
+        signal += np.sin(2 * np.pi * (5 + i*0.5) * time_points) * 0.1
+        
+        eeg_data.append(signal.tolist())
+    
+    return {
+        'eeg_data': eeg_data,
+        'channel_names': channel_names,
+        'sampling_rate': sampling_rate,
+        'timestamp': datetime.now().isoformat()
+    }
+
+def generate_mock_prediction():
+    """Generate mock cognitive state prediction"""
+    states = ['Relaxed', 'Focused', 'Stressed', 'High Load', 'Low Load']
+    predicted_state = np.random.choice(states)
+    confidence = np.random.uniform(0.6, 0.95)
+    
+    return {
+        'predicted_state': predicted_state,
+        'confidence': confidence,
+        'timestamp': datetime.now().isoformat()
+    }
+
+def streaming_worker():
+    """Background worker for streaming mock EEG data"""
+    global streaming_active
+    
+    while streaming_active:
+        try:
+            # Generate mock data
+            eeg_data = generate_mock_eeg_data()
+            prediction = generate_mock_prediction()
+            
+            # Combine data
+            combined_data = {
+                'eeg_data': eeg_data['eeg_data'],
+                'channel_names': eeg_data['channel_names'],
+                'sampling_rate': eeg_data['sampling_rate'],
+                'prediction': prediction,
+                'timestamp': eeg_data['timestamp']
+            }
+            
+            # Emit to connected clients
+            socketio.emit('eeg_data', combined_data)
+            
+            # Wait before next update
+            time.sleep(0.1)  # 10 Hz update rate
+            
+        except Exception as e:
+            print(f"Error in streaming worker: {e}")
+            time.sleep(1)
 
 @app.route('/')
 def index():
@@ -65,13 +149,22 @@ def status():
 
 @app.route('/api/start_streaming', methods=['POST'])
 def start_streaming():
-    global streaming_active
-    streaming_active = True
-    return jsonify({'status': 'started', 'message': 'EEG streaming started'})
+    global streaming_active, streaming_thread
+    
+    if not streaming_active:
+        streaming_active = True
+        streaming_thread = threading.Thread(target=streaming_worker)
+        streaming_thread.daemon = True
+        streaming_thread.start()
+        
+        return jsonify({'status': 'started', 'message': 'EEG streaming started'})
+    else:
+        return jsonify({'status': 'already_running', 'message': 'Streaming already active'})
 
 @app.route('/api/stop_streaming', methods=['POST'])
 def stop_streaming():
     global streaming_active
+    
     streaming_active = False
     return jsonify({'status': 'stopped', 'message': 'EEG streaming stopped'})
 
@@ -131,9 +224,28 @@ def get_training_progress():
         'message': 'Training completed'
     })
 
+@socketio.on('connect')
+def handle_connect():
+    print('Client connected')
+    emit('status', {'status': 'connected'})
+
+@socketio.on('disconnect')
+def handle_disconnect():
+    print('Client disconnected')
+
+@socketio.on('start_streaming')
+def handle_start_streaming():
+    print('Client requested streaming start')
+    # Streaming is handled by the API endpoint
+
+@socketio.on('stop_streaming')
+def handle_stop_streaming():
+    print('Client requested streaming stop')
+    # Streaming stop is handled by the API endpoint
+
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     print(f"Starting Ultra-Minimal NeuroLink-BCI Backend on port {port}")
     print(f"Environment: PORT={port}, FLASK_ENV={os.environ.get('FLASK_ENV', 'development')}")
     
-    app.run(host='0.0.0.0', port=port, debug=False)
+    socketio.run(app, host='0.0.0.0', port=port, debug=False)
