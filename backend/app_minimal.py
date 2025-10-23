@@ -154,6 +154,37 @@ def debug():
         'timestamp': datetime.now().isoformat()
     })
 
+@app.route('/api/test_socketio', methods=['GET'])
+def test_socketio():
+    """Test endpoint to emit a test message via Socket.IO"""
+    try:
+        connected_clients = len(socketio.server.manager.rooms.get('/', {}).get('', set()))
+        print(f"Test Socket.IO: {connected_clients} clients connected")
+        
+        if connected_clients > 0:
+            socketio.emit('test_message', {
+                'message': 'Hello from backend!',
+                'timestamp': datetime.now().isoformat(),
+                'connected_clients': connected_clients
+            })
+            return jsonify({
+                'status': 'success',
+                'message': f'Test message sent to {connected_clients} clients',
+                'connected_clients': connected_clients
+            })
+        else:
+            return jsonify({
+                'status': 'no_clients',
+                'message': 'No clients connected to receive test message',
+                'connected_clients': 0
+            })
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': str(e),
+            'connected_clients': 0
+        })
+
 @app.route('/api/status')
 def status():
     connected_clients = len(socketio.server.manager.rooms.get('/', {}).get('', set()))

@@ -157,6 +157,10 @@ function App() {
       console.log('Received status event:', status);
     });
 
+    socket.on('test_message', (data) => {
+      console.log('Received test message:', data);
+    });
+
     // Debug: Log all events
     socket.onAny((event, ...args) => {
       console.log('Socket.IO event received:', event, args);
