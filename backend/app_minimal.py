@@ -98,8 +98,13 @@ def streaming_worker():
             }
             
             # Emit to connected clients
-            print(f"Emitting EEG data to clients. Connected clients: {len(socketio.server.manager.rooms.get('/', {}).get('', set()))}")
-            socketio.emit('eeg_data', combined_data)
+            connected_clients = len(socketio.server.manager.rooms.get('/', {}).get('', set()))
+            print(f"Emitting EEG data to clients. Connected clients: {connected_clients}")
+            if connected_clients > 0:
+                socketio.emit('eeg_data', combined_data)
+                print(f"EEG data emitted successfully to {connected_clients} clients")
+            else:
+                print("No connected clients to emit data to")
             
             # Wait before next update
             time.sleep(0.1)  # 10 Hz update rate
@@ -151,10 +156,11 @@ def debug():
 
 @app.route('/api/status')
 def status():
+    connected_clients = len(socketio.server.manager.rooms.get('/', {}).get('', set()))
     return jsonify({
         'status': 'running',
         'streaming': streaming_active,
-        'connected_clients': 0,
+        'connected_clients': connected_clients,
         'timestamp': datetime.now().isoformat()
     })
 
@@ -239,8 +245,16 @@ def get_training_progress():
 def handle_connect(auth=None):
     print(f'Client connected: {request.sid}')
     print(f'Client namespace: {request.namespace}')
-    print(f'Total connected clients: {len(socketio.server.manager.rooms.get("/", {}).get("", set()))}')
+    connected_clients = len(socketio.server.manager.rooms.get('/', {}).get('', set()))
+    print(f'Total connected clients: {connected_clients}')
     emit('status', {'status': 'connected', 'server_version': '1.0.0'})
+    # Also emit current system status
+    emit('system_status', {
+        'status': 'running',
+        'streaming': streaming_active,
+        'connected_clients': connected_clients,
+        'timestamp': datetime.now().isoformat()
+    })
 
 @socketio.on('disconnect')
 def handle_disconnect():
