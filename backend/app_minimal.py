@@ -15,13 +15,7 @@ from datetime import datetime
 # Initialize Flask app
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-key')
-CORS(app, origins=[
-    "https://neuro-link-bci.vercel.app",
-    "https://neuro-link-bci-git-main-riddhixrainas-projects.vercel.app",
-    "https://neuro-link-exetr1b97-riddhixrainas-projects.vercel.app",
-    "http://localhost:3000",
-    "http://localhost:3001"
-])
+CORS(app, origins="*", supports_credentials=True)
 socketio = SocketIO(
     app, 
     cors_allowed_origins="*", 
@@ -124,17 +118,14 @@ def index():
 
 @app.route('/api/health')
 def health():
+    print(f"Health check requested from: {request.headers.get('Origin', 'No origin')}")
     return jsonify({
         'status': 'healthy',
         'timestamp': datetime.now().isoformat(),
         'streaming': streaming_active,
         'version': '1.0.0',
         'mode': 'ultra-minimal',
-        'cors_origins': [
-            "https://neuro-link-bci.vercel.app",
-            "https://neuro-link-bci-git-main-riddhixrainas-projects.vercel.app",
-            "https://neuro-link-exetr1b97-riddhixrainas-projects.vercel.app"
-        ]
+        'cors_origins': ["*"]
     })
 
 @app.route('/api/test')
