@@ -257,9 +257,11 @@ if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     print(f"Starting Ultra-Minimal NeuroLink-BCI Backend on port {port}")
     print(f"Environment: PORT={port}, FLASK_ENV={os.environ.get('FLASK_ENV', 'development')}")
+    print("Initializing SocketIO server...")
     
     try:
         # Start the app with SocketIO
+        print("Starting SocketIO server...")
         socketio.run(app, host='0.0.0.0', port=port, debug=False)
     except Exception as e:
         print(f"Error starting SocketIO server: {e}")
