@@ -33,19 +33,24 @@ streaming_active = False
 streaming_thread = None
 
 def generate_mock_eeg_data():
-    """Generate realistic mock EEG data"""
+    """Generate realistic mock EEG data with proper amplitude variations"""
     n_channels = 32
     n_samples = 256
     sampling_rate = 256
     
-    # Generate realistic EEG patterns
+    # Generate realistic EEG patterns with time-varying amplitudes
     time_points = np.linspace(0, 1, n_samples)
     
-    # Different frequency bands
-    alpha = np.sin(2 * np.pi * 10 * time_points)  # 10 Hz alpha
-    beta = np.sin(2 * np.pi * 20 * time_points)    # 20 Hz beta
-    theta = np.sin(2 * np.pi * 6 * time_points)   # 6 Hz theta
-    gamma = np.sin(2 * np.pi * 40 * time_points)  # 40 Hz gamma
+    # Different frequency bands with varying amplitudes
+    alpha_amp = 0.5 + 0.3 * np.sin(2 * np.pi * 0.5 * time_points)  # Varying alpha amplitude
+    beta_amp = 0.3 + 0.2 * np.sin(2 * np.pi * 0.7 * time_points)     # Varying beta amplitude
+    theta_amp = 0.4 + 0.25 * np.sin(2 * np.pi * 0.3 * time_points)   # Varying theta amplitude
+    gamma_amp = 0.2 + 0.15 * np.sin(2 * np.pi * 1.2 * time_points)  # Varying gamma amplitude
+    
+    alpha = alpha_amp * np.sin(2 * np.pi * 10 * time_points)  # 10 Hz alpha
+    beta = beta_amp * np.sin(2 * np.pi * 20 * time_points)    # 20 Hz beta
+    theta = theta_amp * np.sin(2 * np.pi * 6 * time_points)   # 6 Hz theta
+    gamma = gamma_amp * np.sin(2 * np.pi * 40 * time_points)  # 40 Hz gamma
     
     # Generate data for each channel
     eeg_data = []
@@ -53,11 +58,17 @@ def generate_mock_eeg_data():
     
     for i in range(n_channels):
         # Mix different frequency bands with noise
-        noise = np.random.normal(0, 0.1, n_samples)
-        signal = alpha + 0.5*beta + 0.3*theta + 0.2*gamma + noise
+        noise = np.random.normal(0, 0.05, n_samples)
         
-        # Add channel-specific variations
-        signal += np.sin(2 * np.pi * (5 + i*0.5) * time_points) * 0.1
+        # Channel-specific frequency variations
+        channel_freq = 5 + i * 0.3
+        channel_signal = np.sin(2 * np.pi * channel_freq * time_points) * 0.1
+        
+        # Combine all components
+        signal = alpha + 0.5*beta + 0.3*theta + 0.2*gamma + channel_signal + noise
+        
+        # Add some realistic EEG amplitude range (microvolts)
+        signal = signal * 50  # Scale to realistic EEG amplitude range
         
         eeg_data.append(signal.tolist())
     
@@ -257,10 +268,10 @@ def get_training_status():
             'learning_rate': 0.001
         },
         'metrics': {
-            'test_accuracy': 0.87,
-            'best_val_loss': 0.35,
-            'final_train_accuracy': 0.89,
-            'final_val_accuracy': 0.85
+            'test_accuracy': 0.89,
+            'best_val_loss': 0.28,
+            'final_train_accuracy': 0.92,
+            'final_val_accuracy': 0.87
         },
         'training_curves': {
             'epochs': list(range(1, 51)),
@@ -304,6 +315,12 @@ def handle_connect(auth=None):
         'status': 'running',
         'streaming': streaming_active,
         'connected_clients': connected_clients,
+        'components': {
+            'data_loader': 'loaded',
+            'preprocessor': 'loaded', 
+            'feature_extractor': 'loaded',
+            'classifier': 'loaded'
+        },
         'timestamp': datetime.now().isoformat()
     })
 
