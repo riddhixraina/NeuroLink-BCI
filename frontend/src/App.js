@@ -132,6 +132,8 @@ function App() {
     // Connection events
     socket.on('connect', () => {
       console.log('Socket.IO connected to server:', socket.id);
+      console.log('Backend URL:', config.API_BASE_URL);
+      console.log('WebSocket URL:', config.WS_URL);
       setConnected(true);
       setError(null);
     });
@@ -154,6 +156,8 @@ function App() {
 
     socket.on('system_status', (status) => {
       console.log('Received system status:', status);
+      console.log('Components:', status.components);
+      console.log('Streaming:', status.streaming);
       setSystemStatus(status);
       // Update streaming status based on backend status
       if (status.streaming) {
