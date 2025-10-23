@@ -1,8 +1,9 @@
 [build]
-builder = "nixpacks"
+builder = "dockerfile"
+dockerfilePath = "Dockerfile.railway"
 
 [deploy]
-startCommand = "python backend/app_lightweight.py"
+startCommand = "python app.py"
 healthcheckPath = "/api/health"
 healthcheckTimeout = 300
 restartPolicyType = "on_failure"
@@ -11,6 +12,3 @@ restartPolicyType = "on_failure"
 FLASK_ENV = "production"
 PORT = "5000"
 PYTHON_VERSION = "3.10"
-
-[build.env]
-PIP_REQUIREMENTS_FILE = "backend/requirements-railway.txt"
